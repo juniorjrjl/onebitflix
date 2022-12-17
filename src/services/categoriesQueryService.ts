@@ -1,6 +1,6 @@
 import { Category, Course } from "../models"
 
-export const categoriesQueryServices = {
+export const categoriesQueryService = {
     findAllPaginated: async(page: number, perPage: number) => {
         const offset = (page - 1) * perPage
         const {count, rows} = await Category.findAndCountAll({
