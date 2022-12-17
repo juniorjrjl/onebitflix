@@ -4,6 +4,17 @@ import { getIdNumber } from "../helpers/paramConverter"
 import { coursesQueryService } from "../services/coursesQueryService"
 
 export const coursesController = {
+    featured: async (req: Request, res: Response) =>{
+        try {
+            const featuredCourse = await coursesQueryService.getRandomFeaturedCourses()
+            return res.json(featuredCourse)
+        } catch (err) {
+            if (err instanceof Error){
+                return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+            }
+        }
+    },
+    
     show: async (req: Request, res: Response) =>{
         const id = getIdNumber(req.params)
         try {
