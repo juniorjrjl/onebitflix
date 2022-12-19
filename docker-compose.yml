@@ -16,6 +16,7 @@ services:
       DATABASE: onebitflix_development
       USERNAME: onebitflix
       PASSWORD: onebitflix
+      JWT_SECRET: chave-do-jwt
     depends_on:
       - db
   db:
