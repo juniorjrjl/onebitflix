@@ -20,11 +20,24 @@ export const favoritesController = {
         }
     },
     
-    index:async (req: AuthenticatedRequest, res: Response) => {
+    index: async (req: AuthenticatedRequest, res: Response) => {
         try{
             const userId = req.user!.id
             const favorites = await favoritesQueryService.findByUserId(userId)
             return res.json(favorites)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
+            }
+        }
+    },
+
+    delete: async (req: AuthenticatedRequest, res: Response) => {
+        try{
+            const userId = req.user!.id
+            const courseId = req.params.id
+            await favoritesService.delete(userId, Number(courseId))
+            return res.status(StatusCodes.NO_CONTENT)
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
