@@ -22,5 +22,6 @@ router.post('/auth/register', authController.register)
 router.post('/auth/login', authController.login)
 
 router.post('/favorites', ensure, favoritesController.save)
+router.get('/favorites', ensure, favoritesController.index)
 
 export { router }
