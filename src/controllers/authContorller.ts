@@ -34,8 +34,11 @@ export const authController = {
                     firstName: user.firstName,
                     email: user.email
                 }
-                const token = jwtService.signToken(payload, '1d')
-                return res.json({ 'type' : 'Bearer', token })
+                const token = jwtService.sign(payload, '1d')
+                let currentDate = new Date()
+                currentDate.setDate(currentDate.getDate() + 1)
+                const expiresIn = currentDate.getTime()
+                return res.json({ 'type' : 'Bearer', token, expiresIn })
             })
         }catch(err){
             if (err instanceof Error){
