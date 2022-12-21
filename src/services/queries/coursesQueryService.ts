@@ -1,5 +1,5 @@
 import { Op } from "sequelize"
-import { Course, Episode } from "../models"
+import { Course, Episode } from "../../models"
 
 export const coursesQueryService = {
     findByIdWithEpisodes: async (id: number) =>{

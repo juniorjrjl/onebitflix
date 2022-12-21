@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { getPaginationParams } from "../helpers/getPaginationParams";
 import { getIdNumber } from "../helpers/paramConverter";
-import { categoriesQueryService } from "../services/categoriesQueryService";
+import { categoriesQueryService } from "../services/queries/categoriesQueryService";
 
 export const categoriesController = {
     index: async (req: Request, res: Response) => {

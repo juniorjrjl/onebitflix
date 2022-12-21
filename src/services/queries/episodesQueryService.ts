@@ -2,7 +2,7 @@ import { Response } from "express";
 import path from "path"
 import fs from 'fs'
 import { StatusCodes } from "http-status-codes";
-import { VideoInfo } from "../dto/videoInfo";
+import { VideoInfo } from "../../dto/videoInfo";
 
 export const episodesQueryService = {
     streamEpisodeToresponse: (res: Response, videoUrl: string, range: string | undefined): VideoInfo => {

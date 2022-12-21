@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 import { getPaginationParams } from "../helpers/getPaginationParams"
 import { getIdNumber } from "../helpers/paramConverter"
-import { coursesQueryService } from "../services/coursesQueryService"
+import { coursesQueryService } from "../services/queries/coursesQueryService"
 
 export const coursesController = {
     featured: async (req: Request, res: Response) =>{

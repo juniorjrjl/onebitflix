@@ -1,4 +1,4 @@
-import { Course, Favorite } from "../models"
+import { Course, Favorite } from "../../models"
 
 export const favoritesQueryService = {
     findByUserId:async (userId:number) => {

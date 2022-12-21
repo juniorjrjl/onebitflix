@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import { StatusCodes } from 'http-status-codes';
 import { AuthenticatedRequest } from "../middlewares/auth";
-import { favoritesQueryService } from '../services/favoritesQueryService';
+import { favoritesQueryService } from '../services/queries/favoritesQueryService';
 import { favoritesService } from '../services/favoritesService'
 
 export const favoritesController = {

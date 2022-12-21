@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 import fs from 'fs'
-import { episodesQueryService } from "../services/episodesQueryService"
+import { episodesQueryService } from "../services/queries/episodesQueryService"
 
 interface Head{
     [key: string]: any

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../services/jwtService";
 import { usersService } from "../services/userService";
-import { usersQueryService } from "../services/usersQueryService";
+import { usersQueryService } from "../services/queries/usersQueryService";
 
 export const authController = {
     register: async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { Category, Course } from "../models"
+import { Category, Course } from "../../models"
 
 export const categoriesQueryService = {
     findAllPaginated: async(page: number, perPage: number) => {

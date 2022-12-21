@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { UserInstance } from "../models/User";
 import { jwtService } from "../services/jwtService";
-import { usersQueryService } from "../services/usersQueryService";
+import { usersQueryService } from "../services/queries/usersQueryService";
 
 export interface AuthenticatedRequest extends Request {
     user?: UserInstance | null
