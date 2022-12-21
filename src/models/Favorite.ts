@@ -36,4 +36,4 @@ export const Favorite = sequelize.define<FavoriteInstance, Favorite>('Favorite',
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     }
-})
+}, {underscored: true})

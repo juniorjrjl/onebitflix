@@ -33,4 +33,4 @@ export const Like = sequelize.define<LikeInstance, Like>('Like', {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     }
-})
+}, {underscored: true})

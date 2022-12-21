@@ -16,5 +16,13 @@ export const favoritesQueryService = {
             userId,
             courses: favorites.map(f => f.Course)
         }
+    },
+
+    isFavorited: async(userId:number, courseId: number) =>{
+        const favorite = await Favorite.findOne({where: {
+            courseId,
+            userId
+        }})
+        return favorite !== null
     }
 }
