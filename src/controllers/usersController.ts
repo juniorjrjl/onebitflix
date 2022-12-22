@@ -40,6 +40,25 @@ export const usersController = {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
             }
         }
+    },
+
+    changePassword: async (req: AuthenticatedRequest, res: Response) => {
+        try{
+            const user = req.user!
+            const { currentPassword, passwordConfirm, newPassword} = req.body
+            if (currentPassword !== passwordConfirm) throw new Error('Os campos "currentPassword" e "passwordConfirm" são diferentes')
+            user.checkPassword(currentPassword,async (err, isSame) => {
+                if(err) return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
+                if(!isSame) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Senha incorreta' })
+                
+                await usersService.updatePassword(user!.id, newPassword)
+                return res.status(StatusCodes.NO_CONTENT).send()
+            })
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
+            }
+        }
     }
 
 }
