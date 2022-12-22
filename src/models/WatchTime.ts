@@ -6,6 +6,8 @@ export interface WatchTimeAttributes {
     seconds: number
     userId: number
     episodeId: number
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface WatchTimeInstance extends Model<WatchTimeAttributes>, WatchTimeAttributes { }
@@ -30,5 +32,13 @@ export const WatchTime = sequelize.define<WatchTimeInstance, WatchTimeAttributes
         references: { model: 'episodes', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+    },
+    createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE
+    },
+    updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE
     }
 },{underscored: true})
