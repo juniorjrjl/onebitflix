@@ -59,5 +59,16 @@ export const coursesController = {
                 return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
             }
         }
+    },
+
+    popular: async (req: Request, res: Response) =>{
+        try {
+            const topTen = await coursesQueryService.getTopTenByLikes()
+            res.json(topTen)
+        } catch (err) {
+            if (err instanceof Error){
+                return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@ router.get('/categories/:id', ensure, categoriesController.show)
 router.get('/courses/search', ensure, coursesController.search)
 router.get('/courses/featured', ensure,  coursesController.featured)
 router.get('/courses/newest', coursesController.newest)
+router.get('/courses/popular', ensure, coursesController.popular)
 router.get('/courses/:id', ensure, coursesController.show)
 
 router.get('/episodes/stream', ensure, episodesController.stream)
