@@ -19,6 +19,8 @@ router.get('/courses/popular', ensure, coursesController.popular)
 router.get('/courses/:id', ensure, coursesController.show)
 
 router.get('/episodes/stream', ensure, episodesController.stream)
+router.get('/episodes/:id/watchTime', ensure, episodesController.getWatchTime)
+router.post('/episodes/:id/watchTime', ensure, episodesController.setWatchTime)
 
 router.post('/auth/register', authController.register)
 router.post('/auth/login', authController.login)

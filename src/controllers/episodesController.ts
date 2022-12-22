@@ -2,6 +2,8 @@ import { Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 import fs from 'fs'
 import { episodesQueryService } from "../services/queries/episodesQueryService"
+import { AuthenticatedRequest } from "../middlewares/auth"
+import { episodesService } from "../services/episodesService"
 
 interface Head{
     [key: string]: any
@@ -32,6 +34,39 @@ export const episodesController = {
         }catch(err){
             if (err instanceof Error){
                 return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
+            }
+        }
+    },
+
+    getWatchTime: async (req: AuthenticatedRequest, res: Response) => {
+        const userId = req.user!.id
+        const episodeId = req.params.id
+
+        try {
+            const watchTime = await episodesQueryService.getWatchTime(userId, Number(episodeId))
+            return res.json(watchTime)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
+            }
+        }
+    },
+
+    setWatchTime: async (req: AuthenticatedRequest, res: Response) => {
+        const userId = req.user!.id
+        const episodeId = Number(req.params.id)
+        const { seconds } = req.body
+
+        try {
+            const watchTime = await episodesService.setWatchTime({
+                episodeId,
+                userId,
+                seconds
+            })
+            return res.json(watchTime)
+        } catch (err) {
+            if (err instanceof Error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
             }
         }
     }

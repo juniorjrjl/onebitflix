@@ -1,8 +1,8 @@
 import { Response } from "express";
 import path from "path"
 import fs from 'fs'
-import { StatusCodes } from "http-status-codes";
 import { VideoInfo } from "../../dto/videoInfo";
+import { WatchTime } from "../../models";
 
 export const episodesQueryService = {
     streamEpisodeToresponse: (res: Response, videoUrl: string, range: string | undefined): VideoInfo => {
@@ -26,5 +26,27 @@ export const episodesQueryService = {
                     .fileStats(fileStat)
                     .build()
             }
+    },
+
+    getWatchTime: async (userId: number, episodeId: number) => {
+        const watchTime = await WatchTime.findOne({
+            attributes: ['seconds'],
+            where: {
+                userId,
+                episodeId
+            }
+        })
+
+        return watchTime
+    },
+
+    findByUserIdAndEpisodeId: async (userId: number, episodeId: number) =>{
+        const watchTime = await WatchTime.findOne({
+            where: {
+                userId,
+                episodeId
+            }
+        })
+        return watchTime
     }
 }
