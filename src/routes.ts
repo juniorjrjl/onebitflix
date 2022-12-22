@@ -34,5 +34,6 @@ router.post('/likes', ensure, likesController.save)
 router.delete('/likes/:id', ensure, likesController.delete)
 
 router.get('/users/current/watching', ensure, usersController.watching)
+router.get('/users/current', ensure, usersController.show)
 
 export { router }
