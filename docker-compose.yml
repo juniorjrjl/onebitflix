@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  app:
+  api:
     build: .
     command: bash start.sh
     ports:
@@ -19,6 +19,8 @@ services:
       JWT_SECRET: chave-do-jwt
     depends_on:
       - db
+    networks:
+      - onebitflix-net
   db:
     image: postgres:15.1
     environment:
@@ -27,6 +29,13 @@ services:
       POSTGRES_PASSWORD: onebitflix
     ports:
       - "5432:5432"
+    networks:
+      - onebitflix-net
+
+networks:
+  onebitflix-net:
+    name: onebitflix-net
+    external: true
 
 volumes:
   db:
