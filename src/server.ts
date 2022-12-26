@@ -7,13 +7,7 @@ import cors from 'cors'
 
 dotenv.config()
 const app = express()
-app.use(cors({
-    allowedHeaders: '*',
-    origin: '*',
-    credentials: true,
-    maxAge: 3600,
-    methods: 'GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS',
-}))
+app.use(cors())
 app.use(express.static('public'))
 app.use(express.json())
 app.use(adminJs.options.rootPath, adminJsRouter)
