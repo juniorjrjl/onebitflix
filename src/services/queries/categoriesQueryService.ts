@@ -10,7 +10,7 @@ export const categoriesQueryService = {
             offset
         })
         return {
-            categories: rows, 
+            content: rows, 
             page, 
             perPage, 
             total: count
