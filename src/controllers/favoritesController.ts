@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { AuthenticatedRequest } from "../middlewares/auth";
 import { favoritesQueryService } from '../services/queries/favoritesQueryService';
 import { favoritesService } from '../services/favoritesService'
+import { getIdNumber } from '../helpers/paramConverter';
 
 export const favoritesController = {
 
@@ -35,9 +36,9 @@ export const favoritesController = {
     delete: async (req: AuthenticatedRequest, res: Response) => {
         try{
             const userId = req.user!.id
-            const courseId = req.params.id
-            await favoritesService.delete(userId, Number(courseId))
-            return res.status(StatusCodes.NO_CONTENT)
+            const courseId = getIdNumber(req.params)
+            await favoritesService.delete(userId, courseId)
+            return res.status(StatusCodes.NO_CONTENT).send()
         } catch (err) {
             if (err instanceof Error) {
                 return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })

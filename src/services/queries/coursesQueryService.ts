@@ -94,7 +94,7 @@ export const coursesQueryService = {
             offset
         })
         return {
-            courses: rows,
+            content: rows,
             page,
             perPage,
             total: count
