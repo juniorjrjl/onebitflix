@@ -6,7 +6,7 @@ import { episodesController } from "./controllers/episodesController"
 import { favoritesController } from "./controllers/favoritesController"
 import { likesController } from "./controllers/likesController"
 import { usersController } from "./controllers/usersController"
-import { ensure } from "./middlewares/auth"
+import { ensure, ensureQuery } from "./middlewares/auth"
 
 const router = express.Router()
 
@@ -19,7 +19,7 @@ router.get('/courses/newest', coursesController.newest)
 router.get('/courses/popular', ensure, coursesController.popular)
 router.get('/courses/:id', ensure, coursesController.show)
 
-router.get('/episodes/stream', ensure, episodesController.stream)
+router.get('/episodes/stream', ensureQuery, episodesController.stream)
 router.get('/episodes/:id/watchTime', ensure, episodesController.getWatchTime)
 router.post('/episodes/:id/watchTime', ensure, episodesController.setWatchTime)
 

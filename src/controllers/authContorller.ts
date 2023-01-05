@@ -8,7 +8,7 @@ export const authController = {
     register: async (req: Request, res: Response) => {
         const { firstName, lastName, email, password, phone, birth } = req.body
         try{
-            const userAlreadyExists = await usersQueryService.findByemail(email)
+            const userAlreadyExists = await usersQueryService.findByEmail(email)
             if (userAlreadyExists){
                 throw new Error('Este e-mail já está cadastrado')
             }
@@ -24,7 +24,7 @@ export const authController = {
     login: async (req: Request, res: Response) => {
         const { email, password } = req.body
         try{
-            const user = await usersQueryService.findByemail(email)
+            const user = await usersQueryService.findByEmail(email)
             if (!user) return res.status(StatusCodes.NOT_FOUND).json({message: 'email não registradd'})
             user.checkPassword(password, (err, isSame) => {
                 if (err) return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})

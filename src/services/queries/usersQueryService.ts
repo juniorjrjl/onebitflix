@@ -22,7 +22,7 @@ const filterLastEpisodesBycourse = (episodes: EpisodeInstance[]) => {
 }
 
 export const usersQueryService = {
-    findByemail:async (email: string) =>{
+    findByEmail:async (email: string) =>{
         const user = await User.findOne({where: { email }})
         return user
     },
