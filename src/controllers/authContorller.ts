@@ -28,16 +28,13 @@ export const authController = {
         try{
             const user = await usersQueryService.findByEmail(email)
             await usersQueryService.checkPassword(password, user)
-            const payload = { 
-                id: user.id,
-                firstName: user.firstName,
-                email: user.email
-            }
+            const payload = new PayloadDTO(user.id, user.firstName, user.email)
             const token = jwtService.sign(payload, '1d')
             let currentDate = new Date()
             currentDate.setDate(currentDate.getDate() + 1)
             const expiresIn = currentDate.getTime()
-            return res.json({ 'type' : 'Bearer', token, expiresIn })
+            
+            return res.json(new LoginResponse(token, expiresIn))
         }catch(err){
             next(err)
         }
