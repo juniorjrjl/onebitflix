@@ -1,6 +1,8 @@
 import { Course, Episode, User } from "../../models"
 import { EpisodeInstance } from "../../models/Episode"
 import bcrypt from 'bcrypt'
+import { ModelNotFoundError } from "../../errors/modelNotFoundError"
+import { UnauthorizedError } from "../../errors/unauthorizedError"
 
 const filterLastEpisodesBycourse = (episodes: EpisodeInstance[]) => {
     const coursesOnList: number[] = []
@@ -25,6 +27,7 @@ const filterLastEpisodesBycourse = (episodes: EpisodeInstance[]) => {
 export const usersQueryService = {
     findByEmail:async (email: string) =>{
         const user = await User.findOne({where: { email }})
+        if (!user) throw new ModelNotFoundError(`Não existe um usuário cadastrado com o email ${email}`)
         return user
     },
 
@@ -50,6 +53,8 @@ export const usersQueryService = {
     },
 
     checkPassword: async (password: string, user: User) =>{
-        return await bcrypt.compare(password, user.password)
+        const isSame = await bcrypt.compare(password, user.password)
+        if (!isSame) throw new UnauthorizedError('Senha incorreta')
+        return isSame
     }
 }

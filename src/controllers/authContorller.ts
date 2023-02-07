@@ -4,16 +4,17 @@ import { jwtService } from "../services/jwtService";
 import { usersService } from "../services/userService";
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { EmailInUseError } from "../errors/emailInUseError";
-import { OneBitFlixError } from "../errors/oneBitFlixError";
-import { UnauthorizedError } from "../errors/unauthorizedError";
+import { ModelNotFoundError } from "../errors/modelNotFoundError";
 
 export const authController = {
     register: async (req: Request, res: Response, next: NextFunction) => {
         const { firstName, lastName, email, password, phone, birth } = req.body
         try{
-            const userAlreadyExists = await usersQueryService.findByEmail(email)
-            if (userAlreadyExists){
+            try{
+                await usersQueryService.findByEmail(email)
                 throw new EmailInUseError('Este e-mail já está cadastrado')
+            }catch(err){
+                if (!(err instanceof ModelNotFoundError)) throw err
             }
             const user = await usersService.create({ firstName, lastName, email, password, phone, birth, role: 'user' })
             return res.status(StatusCodes.CREATED).json(user)
@@ -26,9 +27,7 @@ export const authController = {
         const { email, password } = req.body
         try{
             const user = await usersQueryService.findByEmail(email)
-            if (!user) return res.status(StatusCodes.NOT_FOUND).json({message: 'email não registradd'})
-            const isSame = await usersQueryService.checkPassword(password, user)
-            if (!isSame) throw new UnauthorizedError('Senha incorreta')
+            await usersQueryService.checkPassword(password, user)
             const payload = { 
                 id: user.id,
                 firstName: user.firstName,

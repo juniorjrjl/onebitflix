@@ -1,6 +1,5 @@
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { UnauthorizedError } from "../errors/unauthorizedError";
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { usersService } from "../services/userService";
@@ -43,8 +42,7 @@ export const usersController = {
             const { currentPassword, passwordConfirm, newPassword } = req.body
             if (newPassword !== passwordConfirm) throw new Error('Os campos "newPassword" e "passwordConfirm" são diferentes')
             
-            const isSame = await usersQueryService.checkPassword(currentPassword, user)
-            if (!isSame) throw new UnauthorizedError('Senha incorreta')
+            await usersQueryService.checkPassword(currentPassword, user)
             await usersService.updatePassword(user!.id, newPassword)
             return res.status(StatusCodes.NO_CONTENT).send()
 
