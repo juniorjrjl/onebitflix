@@ -1,63 +1,55 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
+import { UnauthorizedError } from "../errors/unauthorizedError";
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { usersService } from "../services/userService";
 
 export const usersController = {
 
-    watching: async (req: AuthenticatedRequest, res: Response) => {
+    watching: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const { id } = req.user!
         try{
             const watching = await usersQueryService.getKeepWatchingList(id)
             return res.json(watching)
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     },
 
-    show: async (req: AuthenticatedRequest, res: Response) => {
+    show: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
             const currentUser = req.user!
             return res.json(currentUser)
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     },
 
-    update: async (req: AuthenticatedRequest, res: Response) => {
+    update: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
             const { id } = req.user!
             const { firstName, lastName, phone, birth, email } = req.body
             const updatedUser = await usersService.update(id, {firstName, lastName, phone, birth, email})
             return res.json(updatedUser)
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     },
 
-    changePassword: async (req: AuthenticatedRequest, res: Response) => {
+    changePassword: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
             const user = req.user!
             const { currentPassword, passwordConfirm, newPassword } = req.body
             if (newPassword !== passwordConfirm) throw new Error('Os campos "newPassword" e "passwordConfirm" são diferentes')
-            user.checkPassword(currentPassword,async (err, isSame) => {
-                if(err) return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-                if(!isSame) return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Senha incorreta' })
-                
-                await usersService.updatePassword(user!.id, newPassword)
-                return res.status(StatusCodes.NO_CONTENT).send()
-            })
+            
+            const isSame = await usersQueryService.checkPassword(currentPassword, user)
+            if (!isSame) throw new UnauthorizedError('Senha incorreta')
+            await usersService.updatePassword(user!.id, newPassword)
+            return res.status(StatusCodes.NO_CONTENT).send()
+
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     }
 

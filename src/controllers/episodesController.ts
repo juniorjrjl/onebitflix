@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 import fs from 'fs'
 import { episodesQueryService } from "../services/queries/episodesQueryService"
@@ -11,7 +11,7 @@ interface Head{
 
 export const episodesController = {
 
-    stream: async (req: Request, res: Response) =>{
+    stream: async (req: Request, res: Response, next: NextFunction) =>{
         const { videoUrl } = req.query
         try{
             if (typeof videoUrl !== 'string') throw new Error('videoUrl param type must be a string')
@@ -32,13 +32,11 @@ export const episodesController = {
                 fs.createReadStream(videoInfo.FilePath!).pipe(res)
             }
         }catch(err){
-            if (err instanceof Error){
-                return res.status(StatusCodes.BAD_REQUEST).json({message: err.message})
-            }
+            next(err)
         }
     },
 
-    getWatchTime: async (req: AuthenticatedRequest, res: Response) => {
+    getWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userId = req.user!.id
         const episodeId = req.params.id
 
@@ -46,13 +44,11 @@ export const episodesController = {
             const watchTime = await episodesQueryService.getWatchTime(userId, Number(episodeId))
             return res.json(watchTime)
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     },
 
-    setWatchTime: async (req: AuthenticatedRequest, res: Response) => {
+    setWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         const userId = req.user!.id
         const episodeId = Number(req.params.id)
         const { seconds } = req.body
@@ -65,9 +61,7 @@ export const episodesController = {
             })
             return res.json(watchTime)
         } catch (err) {
-            if (err instanceof Error) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: err.message })
-            }
+            next(err)
         }
     }
 

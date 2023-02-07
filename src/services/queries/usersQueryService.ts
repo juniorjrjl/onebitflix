@@ -1,5 +1,6 @@
 import { Course, Episode, User } from "../../models"
 import { EpisodeInstance } from "../../models/Episode"
+import bcrypt from 'bcrypt'
 
 const filterLastEpisodesBycourse = (episodes: EpisodeInstance[]) => {
     const coursesOnList: number[] = []
@@ -46,5 +47,9 @@ export const usersQueryService = {
         const keepWatchingList = filterLastEpisodesBycourse(userWithTatchingEpisodes.Episodes!)
         keepWatchingList.sort((a, b) => a.watchTime!.updatedAt < b.watchTime!.updatedAt ? 1 : 0) 
         return keepWatchingList
+    },
+
+    checkPassword: async (password: string, user: User) =>{
+        return await bcrypt.compare(password, user.password)
     }
 }
