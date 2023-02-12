@@ -39,3 +39,7 @@ para popular o banco com os dados iniciais execute o seguinte comando:
 
 ```
 docker-compose run --rm app  npx sequelize-cli db:seed:all
+```
+
+## frontend da API
+[onebitflix-front](https://github.com/juniorjrjl/onebitflix-front)

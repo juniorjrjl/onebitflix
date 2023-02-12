@@ -1,4 +1,4 @@
-class LoginResponse{
+export class LoginResponse{
 
     readonly type: string
     readonly token: string

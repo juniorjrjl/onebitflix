@@ -1,4 +1,4 @@
-class PayloadDTO{
+export class PayloadDTO{
 
     readonly id: number
     readonly firstName: string

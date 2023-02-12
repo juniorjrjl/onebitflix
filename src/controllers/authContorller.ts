@@ -5,6 +5,10 @@ import { usersService } from "../services/userService";
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { EmailInUseError } from "../errors/emailInUseError";
 import { ModelNotFoundError } from "../errors/modelNotFoundError";
+import { PayloadDTO } from "../dto/payloadDTO";
+
+import jwt from 'jsonwebtoken'
+import { LoginResponse } from "../responses/loginResponse";
 
 export const authController = {
     register: async (req: Request, res: Response, next: NextFunction) => {
