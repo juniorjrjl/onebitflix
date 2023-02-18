@@ -6,14 +6,14 @@ import { usersQueryService } from "../services/queries/usersQueryService";
 import { EmailInUseError } from "../errors/emailInUseError";
 import { ModelNotFoundError } from "../errors/modelNotFoundError";
 import { PayloadDTO } from "../dto/payloadDTO";
-
-import jwt from 'jsonwebtoken'
 import { LoginResponse } from "../responses/loginResponse";
+import { checkValidators } from "../validatos/validatorUtils";
 
 export const authController = {
     register: async (req: Request, res: Response, next: NextFunction) => {
-        const { firstName, lastName, email, password, phone, birth } = req.body
         try{
+            checkValidators(req)
+            const { firstName, lastName, email, password, phone, birth } = req.body
             try{
                 await usersQueryService.findByEmail(email)
                 throw new EmailInUseError('Este e-mail já está cadastrado')
@@ -28,8 +28,9 @@ export const authController = {
     },
 
     login: async (req: Request, res: Response, next: NextFunction) => {
-        const { email, password } = req.body
-        try{
+        //try{
+            checkValidators(req)
+            const { email, password } = req.body
             const user = await usersQueryService.findByEmail(email)
             await usersQueryService.checkPassword(password, user)
             const payload = new PayloadDTO(user.id, user.firstName, user.email)
@@ -39,8 +40,8 @@ export const authController = {
             const expiresIn = currentDate.getTime()
             
             return res.json(new LoginResponse(token, expiresIn))
-        }catch(err){
-            next(err)
-        }
+        //}catch(err){
+            //next(err)
+        //}
     }
 }

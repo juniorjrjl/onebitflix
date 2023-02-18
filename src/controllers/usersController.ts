@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { usersService } from "../services/userService";
+import { checkValidators } from "../validatos/validatorUtils";
 
 export const usersController = {
 
@@ -27,6 +28,7 @@ export const usersController = {
 
     update: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
+            checkValidators(req)
             const { id } = req.user!
             const { firstName, lastName, phone, birth, email } = req.body
             const updatedUser = await usersService.update(id, {firstName, lastName, phone, birth, email})
@@ -38,9 +40,9 @@ export const usersController = {
 
     changePassword: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
+            checkValidators(req)
             const user = req.user!
             const { currentPassword, passwordConfirm, newPassword } = req.body
-            if (newPassword !== passwordConfirm) throw new Error('Os campos "newPassword" e "passwordConfirm" são diferentes')
             
             await usersQueryService.checkPassword(currentPassword, user)
             await usersService.updatePassword(user!.id, newPassword)

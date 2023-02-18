@@ -6,6 +6,7 @@ import { AuthenticatedRequest } from "../middlewares/auth"
 import { coursesQueryService } from "../services/queries/coursesQueryService"
 import { favoritesQueryService } from "../services/queries/favoritesQueryService"
 import { likesQueryService } from "../services/queries/LikesQueryService"
+import { checkValidators } from "../validatos/validatorUtils"
 
 export const coursesController = {
     featured: async (req: Request, res: Response, next: NextFunction) =>{
@@ -27,9 +28,10 @@ export const coursesController = {
     },
 
     show: async (req: AuthenticatedRequest, res: Response, next: NextFunction) =>{
-        const courseId = getIdNumber(req.params)
-        const userId = req.user!.id
         try {
+            checkValidators(req)
+            const courseId = getIdNumber(req.params)
+            const userId = req.user!.id
             const course = await coursesQueryService.findByIdWithEpisodes(courseId)
             if (!course) throw new ModelNotFoundError('Curso não encontrado')
 
@@ -42,9 +44,10 @@ export const coursesController = {
     },
 
     search: async (req: Request, res: Response, next: NextFunction) =>{
-        let { name } = req.query
-        const [page, perPage ] = getPaginationParams(req.query)
         try {
+            checkValidators(req)
+            let { name } = req.query
+            const [page, perPage ] = getPaginationParams(req.query)
             if (typeof name !== 'string') name = undefined
             const courses = await coursesQueryService.findByName(page, perPage, name)
             return res.json(courses)

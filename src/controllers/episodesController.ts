@@ -4,6 +4,7 @@ import fs from 'fs'
 import { episodesQueryService } from "../services/queries/episodesQueryService"
 import { AuthenticatedRequest } from "../middlewares/auth"
 import { episodesService } from "../services/episodesService"
+import { checkValidators } from "../validatos/validatorUtils"
 
 interface Head{
     [key: string]: any
@@ -12,8 +13,9 @@ interface Head{
 export const episodesController = {
 
     stream: async (req: Request, res: Response, next: NextFunction) =>{
-        const { videoUrl } = req.query
         try{
+            checkValidators(req)
+            const { videoUrl } = req.query
             if (typeof videoUrl !== 'string') throw new Error('videoUrl param type must be a string')
             const range = req.headers.range
             const videoInfo = episodesQueryService.streamEpisodeToresponse(res, videoUrl, range)
@@ -37,10 +39,10 @@ export const episodesController = {
     },
 
     getWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const userId = req.user!.id
-        const episodeId = req.params.id
-
         try {
+            checkValidators(req)
+            const userId = req.user!.id
+            const episodeId = req.params.id
             const watchTime = await episodesQueryService.getWatchTime(userId, Number(episodeId))
             return res.json(watchTime)
         } catch (err) {
@@ -49,11 +51,11 @@ export const episodesController = {
     },
 
     setWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const userId = req.user!.id
-        const episodeId = Number(req.params.id)
-        const { seconds } = req.body
-
         try {
+            checkValidators(req)
+            const userId = req.user!.id
+            const episodeId = Number(req.params.id)
+            const { seconds } = req.body
             const watchTime = await episodesService.setWatchTime({
                 episodeId,
                 userId,

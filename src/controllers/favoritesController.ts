@@ -4,14 +4,15 @@ import { AuthenticatedRequest } from "../middlewares/auth";
 import { favoritesQueryService } from '../services/queries/favoritesQueryService';
 import { favoritesService } from '../services/favoritesService'
 import { getIdNumber } from '../helpers/paramConverter';
+import { checkValidators } from '../validatos/validatorUtils';
 
 export const favoritesController = {
 
     save: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-        const userId = req.user!.id
-        const { courseId } = req.body
-
-        try {
+        try {    
+            checkValidators(req)
+            const userId = req.user!.id
+            const { courseId } = req.body
             const favorite = await favoritesService.create(userId, courseId)
             return res.status(StatusCodes.CREATED).json(favorite)
         } catch (err) {
@@ -31,6 +32,7 @@ export const favoritesController = {
 
     delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
+            checkValidators(req)
             const userId = req.user!.id
             const courseId = getIdNumber(req.params)
             await favoritesService.delete(userId, courseId)

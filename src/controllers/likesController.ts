@@ -3,10 +3,12 @@ import { StatusCodes } from 'http-status-codes'
 import { getIdNumber } from '../helpers/paramConverter'
 import { AuthenticatedRequest } from '../middlewares/auth'
 import { likesService } from '../services/likesService'
+import { checkValidators } from '../validatos/validatorUtils'
 
 export const likesController = {
     save: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try {
+            checkValidators(req)
             const userId = req.user!.id
             const { courseId } = req.body
             const like = await likesService.create(userId, courseId)
@@ -18,6 +20,7 @@ export const likesController = {
 
     delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
+            checkValidators(req)
             const userId = req.user!.id
             const courseId = getIdNumber(req.params)
             await likesService.delete(userId, courseId)
