@@ -24,14 +24,14 @@ router.get('/courses/search', ...[ensure, coursesSearchValidators()], coursesCon
 router.get('/courses/featured', ensure,  coursesController.featured)
 router.get('/courses/newest', coursesController.newest)
 router.get('/courses/popular', ensure, coursesController.popular)
-router.get('/courses/:id', ...[ensure, courseShowValidators], coursesController.show)
+router.get('/courses/:id', ...[ensure, courseShowValidators()], coursesController.show)
 
 router.get('/episodes/stream', ...[ensureQuery, getEpidodesValidators()], episodesController.stream)
 router.get('/episodes/:id/watchTime', ...[ensure, getWatchTimeEpisodesValidators()], episodesController.getWatchTime)
 router.post('/episodes/:id/watchTime', ...[ensure, setWatchTimeEpisodesValidators()], episodesController.setWatchTime)
 
-router.post('/auth/register', authRegisterValidators, authController.register)
-router.post('/auth/login', authLoginValidators, authController.login)
+router.post('/auth/register', authRegisterValidators(), authController.register)
+router.post('/auth/login', authLoginValidators(), authController.login)
 
 router.post('/favorites', ...[ensure, favoriteSaveValidators()], favoritesController.save)
 router.get('/favorites', ensure, favoritesController.index)

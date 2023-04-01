@@ -28,7 +28,8 @@ export const authController = {
     },
 
     login: async (req: Request, res: Response, next: NextFunction) => {
-        //try{
+        try{
+            console.log('chegou')
             checkValidators(req)
             const { email, password } = req.body
             const user = await usersQueryService.findByEmail(email)
@@ -40,8 +41,8 @@ export const authController = {
             const expiresIn = currentDate.getTime()
             
             return res.json(new LoginResponse(token, expiresIn))
-        //}catch(err){
-            //next(err)
-        //}
+        }catch(err){
+            next(err)
+        }
     }
 }
