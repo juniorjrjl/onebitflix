@@ -4,6 +4,7 @@ import { AuthenticatedRequest } from '../middlewares/auth'
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { usersService } from "../services/userService";
 import { checkValidators } from "../validatos/validatorUtils";
+import { showSerializer, updateSerializer, watchingSerializer } from "../serializers/usersSerializer";
 
 export const usersController = {
 
@@ -11,7 +12,7 @@ export const usersController = {
         const { id } = req.user!
         try{
             const watching = await usersQueryService.getKeepWatchingList(id)
-            return res.json(watching)
+            return res.json(watchingSerializer(watching))
         } catch (err) {
             next(err)
         }
@@ -20,7 +21,7 @@ export const usersController = {
     show: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
         try{
             const currentUser = req.user!
-            return res.json(currentUser)
+            return res.json(showSerializer(currentUser))
         } catch (err) {
             next(err)
         }
@@ -32,7 +33,7 @@ export const usersController = {
             const { id } = req.user!
             const { firstName, lastName, phone, birth, email } = req.body
             const updatedUser = await usersService.update(id, {firstName, lastName, phone, birth, email})
-            return res.json(updatedUser)
+            return res.json(updateSerializer(updatedUser))
         } catch (err) {
             next(err)
         }

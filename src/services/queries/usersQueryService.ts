@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt'
 import { ModelNotFoundError } from "../../errors/modelNotFoundError"
 import { UnauthorizedError } from "../../errors/unauthorizedError"
 
-const filterLastEpisodesBycourse = (episodes: EpisodeInstance[]) => {
+const filterLastEpisodesByCourse = (episodes: EpisodeInstance[]) => {
     const coursesOnList: number[] = []
 
     const lastEpisodes = episodes.reduce((currentList, episode) => {
@@ -32,7 +32,7 @@ export const usersQueryService = {
     },
 
     getKeepWatchingList: async (id: number) => {
-        const userWithTatchingEpisodes = await User.findByPk(id, {
+        const userWithWatchingEpisodes = await User.findByPk(id, {
             include:{
                 model: Episode,
                 attributes: ['id', 'name', 'synopsis', 'order', ['video_url', 'videoUrl'], ['seconds_long', 'secondsLong'], ['course_id', 'courseId']],
@@ -45,9 +45,9 @@ export const usersQueryService = {
                 }
             },
         })
-        if (!userWithTatchingEpisodes) throw new Error('Usuário não encontrado')
+        if (!userWithWatchingEpisodes) throw new Error('Usuário não encontrado')
 
-        const keepWatchingList = filterLastEpisodesBycourse(userWithTatchingEpisodes.Episodes!)
+        const keepWatchingList = filterLastEpisodesByCourse(userWithWatchingEpisodes.Episodes!)
         keepWatchingList.sort((a, b) => a.watchTime!.updatedAt < b.watchTime!.updatedAt ? 1 : 0) 
         return keepWatchingList
     },

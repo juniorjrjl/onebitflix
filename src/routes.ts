@@ -17,8 +17,8 @@ import { userChangePasswordValidtators, userUpdateValidators } from "./validatos
 
 const router = express.Router()
 
-router.get('/categories', ...[ensure, categoriesShowValidator()], categoriesController.index)
-router.get('/categories/:id', ...[ensure, categoriesIndexValidator()], categoriesController.show)
+router.get('/categories', ...[ensure, categoriesIndexValidator()], categoriesController.index)
+router.get('/categories/:id', ...[ensure, categoriesShowValidator()], categoriesController.show)
 
 router.get('/courses/search', ...[ensure, coursesSearchValidators()], coursesController.search)
 router.get('/courses/featured', ensure,  coursesController.featured)

@@ -5,6 +5,7 @@ import { episodesQueryService } from "../services/queries/episodesQueryService"
 import { AuthenticatedRequest } from "../middlewares/auth"
 import { episodesService } from "../services/episodesService"
 import { checkValidators } from "../validatos/validatorUtils"
+import { getWatchTimeSerializer, setWatchTimeSerializer } from "../serializers/episodesSerializer"
 
 interface Head{
     [key: string]: any
@@ -44,7 +45,7 @@ export const episodesController = {
             const userId = req.user!.id
             const episodeId = req.params.id
             const watchTime = await episodesQueryService.getWatchTime(userId, Number(episodeId))
-            return res.json(watchTime)
+            return res.json(getWatchTimeSerializer(watchTime))
         } catch (err) {
             next(err)
         }
@@ -61,7 +62,7 @@ export const episodesController = {
                 userId,
                 seconds
             })
-            return res.json(watchTime)
+            return res.json(setWatchTimeSerializer(watchTime))
         } catch (err) {
             next(err)
         }

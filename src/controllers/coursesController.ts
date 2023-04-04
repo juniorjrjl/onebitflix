@@ -7,12 +7,13 @@ import { coursesQueryService } from "../services/queries/coursesQueryService"
 import { favoritesQueryService } from "../services/queries/favoritesQueryService"
 import { likesQueryService } from "../services/queries/LikesQueryService"
 import { checkValidators } from "../validatos/validatorUtils"
+import { featuredSerializer, newestSerializer, popularSerializer, searchSerializer, showSerializer } from "../serializers/courseSerializer"
 
 export const coursesController = {
     featured: async (req: Request, res: Response, next: NextFunction) =>{
         try {
-            const featuredCourse = await coursesQueryService.getRandomFeaturedCourses()
-            return res.json(featuredCourse)
+            const featured = await coursesQueryService.getRandomFeaturedCourses()
+            return res.json(featuredSerializer(featured))
         } catch (err) {
             next(err)
         }
@@ -21,7 +22,7 @@ export const coursesController = {
     newest: async (req: Request, res: Response, next: NextFunction) =>{
         try {
             const newest = await coursesQueryService.getTopTenNewest()
-            return res.json(newest)
+            return res.json(newestSerializer(newest))
         } catch (err) {
             next(err)
         }
@@ -37,7 +38,7 @@ export const coursesController = {
 
             const liked = await likesQueryService.isLiked(userId, courseId)
             const favorited = await favoritesQueryService.isFavorited(userId, courseId)
-            return res.json({...course.get(), liked, favorited})  
+            return res.json(showSerializer(course, liked, favorited))
         } catch (err) {
             next(err)
         }
@@ -50,7 +51,7 @@ export const coursesController = {
             const [page, perPage ] = getPaginationParams(req.query)
             if (typeof name !== 'string') name = undefined
             const courses = await coursesQueryService.findByName(page, perPage, name)
-            return res.json(courses)
+            return res.json(searchSerializer(courses))
         } catch (err) {
             next(err)
         }
@@ -59,7 +60,7 @@ export const coursesController = {
     popular: async (req: Request, res: Response, next: NextFunction) =>{
         try {
             const topTen = await coursesQueryService.getTopTenByLikes()
-            res.json(topTen)
+            res.json(popularSerializer(topTen))
         } catch (err) {
             next(err)
         }

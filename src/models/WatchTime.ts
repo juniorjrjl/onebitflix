@@ -1,8 +1,8 @@
-import { DataTypes, Model } from "sequelize"
+import { DataTypes, Model, Optional } from "sequelize"
 import { sequelize } from "../database"
 
 
-export interface WatchTimeAttributes {
+export interface WatchTime {
     seconds: number
     userId: number
     episodeId: number
@@ -10,9 +10,9 @@ export interface WatchTimeAttributes {
     updatedAt: Date
 }
 
-export interface WatchTimeInstance extends Model<WatchTimeAttributes>, WatchTimeAttributes { }
+export interface WatchTimeInstance extends Model<WatchTime>, WatchTime { }
 
-export const WatchTime = sequelize.define<WatchTimeInstance, WatchTimeAttributes>('WatchTime', {
+export const WatchTime = sequelize.define<WatchTimeInstance, WatchTime>('WatchTime', {
     seconds: {
         allowNull: false,
         type: DataTypes.INTEGER

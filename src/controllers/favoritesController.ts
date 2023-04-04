@@ -5,6 +5,7 @@ import { favoritesQueryService } from '../services/queries/favoritesQueryService
 import { favoritesService } from '../services/favoritesService'
 import { getIdNumber } from '../helpers/paramConverter';
 import { checkValidators } from '../validatos/validatorUtils';
+import { indexSerializer, saveSerializer } from '../serializers/favoritesSerializer';
 
 export const favoritesController = {
 
@@ -14,7 +15,7 @@ export const favoritesController = {
             const userId = req.user!.id
             const { courseId } = req.body
             const favorite = await favoritesService.create(userId, courseId)
-            return res.status(StatusCodes.CREATED).json(favorite)
+            return res.status(StatusCodes.CREATED).json(saveSerializer(favorite))
         } catch (err) {
             next(err)
         }
@@ -24,7 +25,7 @@ export const favoritesController = {
         try{
             const userId = req.user!.id
             const favorites = await favoritesQueryService.findByUserId(userId)
-            return res.json(favorites)
+            return res.json(indexSerializer(favorites))
         } catch (err) {
             next(err)
         }
