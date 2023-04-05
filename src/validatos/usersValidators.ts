@@ -8,9 +8,9 @@ const changePasswordBodyValidators = [
     body('currentPassword').isLength({min: 6, max: 12}).withMessage('A senha atual tem entre 6 e 12 caractéres'),
     body('newPassword').isLength({min: 6, max: 12}).withMessage('A senha atual tem entre 6 e 12 caractéres'),
     body('newPassword').isLength({min: 6, max: 12}).withMessage('A nova senha deve ter entre 6 e 12 caractéres'),
-    body(['currentPassword', 'passwordConfirm'])
-        .custom((_: any, meta: Meta) => passwordConfirmation('currentPassword', 'passwordConfirm', meta))
-        .withMessage("Os campos 'currentPassword'e 'passwordConfirm' estão diferentes")
+    body(['newPassword', 'passwordConfirm'])
+        .custom((_: any, meta: Meta) => passwordConfirmation('newPassword', 'passwordConfirm', meta))
+        .withMessage("Os campos 'newPassword'e 'passwordConfirm' estão diferentes")
 ]
 
 const updateBodyValidators = [

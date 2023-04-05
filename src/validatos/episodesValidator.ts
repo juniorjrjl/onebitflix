@@ -1,4 +1,4 @@
-import { param } from "express-validator";
+import { body, param, query } from "express-validator";
 
 const getWatchTimeValidators = [
     param('id').isNumeric().withMessage('informe um id de tempo de transmissão válido')
@@ -6,11 +6,12 @@ const getWatchTimeValidators = [
 
 const setWatchTimeValidators = [
     param('id').isNumeric().withMessage('informe um id de tempo de transmissão válido'),
-    param('seconds').isNumeric().withMessage('informe o momento em que o usuário parou de assistir os vídeos em segundos')
+    body('seconds').isNumeric().withMessage('informe o momento em que o usuário parou de assistir os vídeos em segundos')
 ]
 
 const getValidators = [
-    param('id').isString().withMessage('informe uma url de vídeo válida')
+    query('videoUrl').isString().withMessage('informe uma url de vídeo válida'),
+    query('token').isString().withMessage('informe um token válido')
 ]
 
 export const getWatchTimeEpisodesValidators = () => getWatchTimeValidators
