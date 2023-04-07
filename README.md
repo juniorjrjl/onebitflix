@@ -43,3 +43,11 @@ docker-compose run --rm app  npx sequelize-cli db:seed:all
 
 ## frontend da API
 [onebitflix-front](https://github.com/juniorjrjl/onebitflix-front)
+
+## Documentação dos endpoints
+
+acesse na api a seguinte rota: {PROTOCOL}://{HOST}:{3000}/doc
+
+ex.:
+
+http://localhost:3000/doc
