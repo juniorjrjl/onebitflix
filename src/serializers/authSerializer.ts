@@ -2,10 +2,10 @@ import { User } from "../models";
 
 export const registerSerializer = (user: User) =>{
     return {
+        id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        password: user.password,
         phone: user.phone,
         birth: user.birth,
     }
