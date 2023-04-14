@@ -1,13 +1,19 @@
 import { NextFunction, Response } from 'express'
 import { StatusCodes } from 'http-status-codes';
-import { AuthenticatedRequest } from "../middlewares/auth";
-import { favoritesQueryService } from '../services/queries/favoritesQueryService';
-import { favoritesService } from '../services/favoritesService'
+import { AuthenticatedRequest, ensure } from "../middlewares/auth";
+import FavoritesQueryService from '../services/queries/favoritesQueryService';
+import FavoritesService from '../services/favoritesService'
 import { getIdNumber } from '../helpers/paramConverter';
 import { checkValidators } from '../validatos/validatorUtils';
 import { indexSerializer, saveSerializer } from '../serializers/favoritesSerializer';
+import { DELETE, GET, POST, before, route } from 'awilix-express';
+import { favoriteDeleteValidators, favoriteSaveValidators } from '../validatos/favoritesValidator';
 
-export const favoritesController = {
+@route('/favorites')
+export default class FavoritesController{
+
+    constructor(private readonly favoritesService: FavoritesService,
+                private readonly favoritesQueryService: FavoritesQueryService){}
 
     /**
      * @swagger
@@ -55,17 +61,19 @@ export const favoritesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    save: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @POST()
+    @before([ensure, favoriteSaveValidators()])
+    async save(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {    
             checkValidators(req)
             const userId = req.user!.id
             const { courseId } = req.body
-            const favorite = await favoritesService.create(userId, courseId)
+            const favorite = await this.favoritesService.create(userId, courseId)
             return res.status(StatusCodes.CREATED).json(saveSerializer(favorite))
         } catch (err) {
             next(err)
         }
-    },
+    }
     
     /**
      * @swagger
@@ -107,15 +115,17 @@ export const favoritesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    index: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @GET()
+    @before([ensure])
+    async index(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             const userId = req.user!.id
-            const favorites = await favoritesQueryService.findByUserId(userId)
+            const favorites = await this.favoritesQueryService.findByUserId(userId)
             return res.json(indexSerializer(favorites))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -161,12 +171,15 @@ export const favoritesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @route('/:id')
+    @DELETE()
+    @before([ensure, favoriteDeleteValidators()])
+    async delete(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const userId = req.user!.id
             const courseId = getIdNumber(req.params)
-            await favoritesService.delete(userId, courseId)
+            await this.favoritesService.delete(userId, courseId)
             return res.status(StatusCodes.NO_CONTENT).send()
         } catch (err) {
             next(err)

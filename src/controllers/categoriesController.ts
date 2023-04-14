@@ -1,11 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import { getPaginationParams } from "../helpers/getPaginationParams";
 import { getIdNumber } from "../helpers/paramConverter";
-import { categoriesQueryService } from "../services/queries/categoriesQueryService";
+import CategoriesQueryService from "../services/queries/categoriesQueryService";
 import { checkValidators } from "../validatos/validatorUtils";
 import { indexSerializer, showSerializer } from "../serializers/categoriesSerializer";
+import { GET, before, route } from "awilix-express";
+import { ensure } from "../middlewares/auth";
+import { categoriesIndexValidator, categoriesShowValidator } from "../validatos/categoriesValidator";
 
-export const categoriesController = {
+@route('/categories')
+export default class CategoriesController{
+
+    constructor(private readonly categoriesQueryService: CategoriesQueryService){}
 
     /**
      * @swagger
@@ -64,16 +70,18 @@ export const categoriesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    index: async (req: Request, res: Response, next: NextFunction) => {
+    @GET()
+    @before([ensure, categoriesIndexValidator()])
+    async index(req: Request, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const [page, perPage] = getPaginationParams(req.query)
-            const paginated = await categoriesQueryService.findAllPaginated(page, perPage)
+            const paginated = await this.categoriesQueryService.findAllPaginated(page, perPage)
             return res.json(indexSerializer(paginated))
         }catch(err){
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -124,11 +132,14 @@ export const categoriesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    show: async (req: Request, res: Response, next: NextFunction) => {
+    @route('/:id')
+    @GET()
+    @before([ensure, categoriesShowValidator()])
+    async show(req: Request, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             const id = getIdNumber(req.params)
-            const category = await categoriesQueryService.findByIdWithCourses(id)
+            const category = await this.categoriesQueryService.findByIdWithCourses(id)
             return res.json(showSerializer(category!))
         } catch (err) {
             next(err)

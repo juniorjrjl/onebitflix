@@ -1,12 +1,17 @@
 import { NextFunction, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { getIdNumber } from '../helpers/paramConverter'
-import { AuthenticatedRequest } from '../middlewares/auth'
-import { likesService } from '../services/likesService'
+import { AuthenticatedRequest, ensure } from '../middlewares/auth'
+import LikesService from '../services/likesService'
 import { checkValidators } from '../validatos/validatorUtils'
 import { saveSerializer } from '../serializers/likesSerializer'
+import { DELETE, POST, before, route } from 'awilix-express'
+import { likeDeleteValidators, likeSaveValidators } from '../validatos/likesValidator'
 
-export const likesController = {
+@route('/likes')
+export default class LikesController{
+
+    constructor(private readonly likesService: LikesService){}
 
     /**
      * @swagger
@@ -54,17 +59,19 @@ export const likesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    save: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @POST()
+    @before([ensure, likeSaveValidators()])
+    async save(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             const userId = req.user!.id
             const { courseId } = req.body
-            const like = await likesService.create(userId, courseId)
+            const like = await this.likesService.create(userId, courseId)
             return res.status(StatusCodes.CREATED).json(saveSerializer(like))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -110,12 +117,15 @@ export const likesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    delete: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @route('/:id')
+    @DELETE()
+    @before([ensure, likeDeleteValidators()])
+    async delete(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const userId = req.user!.id
             const courseId = getIdNumber(req.params)
-            await likesService.delete(userId, courseId)
+            await this.likesService.delete(userId, courseId)
             return res.status(StatusCodes.NO_CONTENT).send()
         } catch (err) {
             next(err)

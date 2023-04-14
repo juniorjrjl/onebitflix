@@ -4,8 +4,8 @@ import fs from 'fs'
 import { VideoInfo } from "../../dto/videoInfo";
 import { WatchTime } from "../../models";
 
-export const episodesQueryService = {
-    streamEpisodeToresponse: (res: Response, videoUrl: string, range: string | undefined): VideoInfo => {
+export default class EpisodesQueryService{
+    async streamEpisodeToresponse(res: Response, videoUrl: string, range: string | undefined){
         const filePath = path.join(__dirname, '..', '..', '..','uploads', videoUrl)
         const fileStat = fs.statSync(filePath)
             
@@ -26,9 +26,9 @@ export const episodesQueryService = {
                 .fileStats(fileStat)
                 .build()
         }
-    },
+    }
 
-    getWatchTime: async (userId: number, episodeId: number) => {
+    async getWatchTime(userId: number, episodeId: number){
         const watchTime = await WatchTime.findOne({
             attributes: ['seconds'],
             where: {
@@ -38,9 +38,9 @@ export const episodesQueryService = {
         })
 
         return watchTime
-    },
+    }
 
-    findByUserIdAndEpisodeId: async (userId: number, episodeId: number) =>{
+    async findByUserIdAndEpisodeId(userId: number, episodeId: number){
         const watchTime = await WatchTime.findOne({
             where: {
                 userId,

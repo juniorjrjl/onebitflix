@@ -1,17 +1,23 @@
 import { NextFunction, Request, Response } from "express"
 import { StatusCodes } from "http-status-codes"
 import fs from 'fs'
-import { episodesQueryService } from "../services/queries/episodesQueryService"
-import { AuthenticatedRequest } from "../middlewares/auth"
-import { episodesService } from "../services/episodesService"
+import EpisodesQueryService from "../services/queries/episodesQueryService"
+import { AuthenticatedRequest, ensure, ensureQuery } from "../middlewares/auth"
+import EpisodesService from "../services/episodesService"
 import { checkValidators } from "../validatos/validatorUtils"
 import { getWatchTimeSerializer, setWatchTimeSerializer } from "../serializers/episodesSerializer"
+import { GET, POST, before, route } from "awilix-express"
+import { getEpidodesValidators, getWatchTimeEpisodesValidators, setWatchTimeEpisodesValidators } from "../validatos/episodesValidator"
 
 interface Head{
     [key: string]: any
 }
 
-export const episodesController = {
+@route('/episodes')
+export default class EpisodesController{
+
+    constructor(private readonly episodesService: EpisodesService,
+                private readonly episodesQueryService: EpisodesQueryService){}
 
     /**
      * @swagger
@@ -61,12 +67,15 @@ export const episodesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    stream: async (req: Request, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/stream')
+    @before([ensureQuery, getEpidodesValidators()])
+    async stream(req: Request, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const { videoUrl } = req.query
             const range = req.headers.range
-            const videoInfo = episodesQueryService.streamEpisodeToresponse(res, videoUrl as string, range)
+            const videoInfo = await this.episodesQueryService.streamEpisodeToresponse(res, videoUrl as string, range)
             let head: Head = {
                 'Content-Type' : 'video/mp4'
             }
@@ -84,7 +93,7 @@ export const episodesController = {
         }catch(err){
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -134,17 +143,20 @@ export const episodesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    getWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @GET()
+    @route('/:id/watchTime')
+    @before([ensure, getWatchTimeEpisodesValidators()])
+    async getWatchTime(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             const userId = req.user!.id
             const episodeId = req.params.id
-            const watchTime = await episodesQueryService.getWatchTime(userId, Number(episodeId))
+            const watchTime = await this.episodesQueryService.getWatchTime(userId, Number(episodeId))
             return res.json(getWatchTimeSerializer(watchTime))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -200,13 +212,16 @@ export const episodesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    setWatchTime: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @POST()
+    @route('/:id/watchTime')
+    @before([ensure, setWatchTimeEpisodesValidators()])
+    async setWatchTime(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             const userId = req.user!.id
             const episodeId = Number(req.params.id)
             const { seconds } = req.body
-            const watchTime = await episodesService.setWatchTime({
+            const watchTime = await this.episodesService.setWatchTime({
                 episodeId,
                 userId,
                 seconds

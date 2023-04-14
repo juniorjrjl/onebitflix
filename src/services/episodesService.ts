@@ -1,10 +1,12 @@
 import { WatchTime } from "../models"
-import { WatchTimeAttributes } from "../models/WatchTime"
-import { episodesQueryService } from "./queries/episodesQueryService"
+import EpisodesQueryService from "./queries/episodesQueryService"
 
-export const episodesService = {
-    setWatchTime: async ({ userId, episodeId, seconds }: WatchTimeAttributes) => {
-        let watchTime = await episodesQueryService.findByUserIdAndEpisodeId(userId, episodeId)
+export default class EpisodesService{
+
+    constructor(private readonly episodesQueryService: EpisodesQueryService) {}
+
+    async setWatchTime({ userId, episodeId, seconds }: WatchTime){
+        let watchTime = await this.episodesQueryService.findByUserIdAndEpisodeId(userId, episodeId)
         if (watchTime) {
             watchTime.seconds = seconds
             await watchTime.save()
@@ -13,9 +15,12 @@ export const episodesService = {
             watchTime = await WatchTime.create({
                 userId,
                 episodeId,
-                seconds
+                seconds,
+                createdAt: new Date(),
+                updatedAt: new Date()
             })
             return watchTime
         }
     }
+    
 }

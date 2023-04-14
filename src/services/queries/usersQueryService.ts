@@ -24,14 +24,14 @@ const filterLastEpisodesByCourse = (episodes: EpisodeInstance[]) => {
     return lastEpisodes
 }
 
-export const usersQueryService = {
-    findByEmail:async (email: string) =>{
+export default class UsersQueryService{
+    async findByEmail(email: string){
         const user = await User.findOne({where: { email }})
         if (!user) throw new ModelNotFoundError(`Não existe um usuário cadastrado com o email ${email}`)
         return user
-    },
+    }
 
-    getKeepWatchingList: async (id: number) => {
+    async getKeepWatchingList(id: number){
         const userWithWatchingEpisodes = await User.findByPk(id, {
             include:{
                 model: Episode,
@@ -50,9 +50,9 @@ export const usersQueryService = {
         const keepWatchingList = filterLastEpisodesByCourse(userWithWatchingEpisodes.Episodes!)
         keepWatchingList.sort((a, b) => a.watchTime!.updatedAt < b.watchTime!.updatedAt ? 1 : 0) 
         return keepWatchingList
-    },
+    }
 
-    checkPassword: async (password: string, user: User) =>{
+    async checkPassword(password: string, user: User){
         const isSame = await bcrypt.compare(password, user.password)
         if (!isSame) throw new UnauthorizedError('Senha incorreta')
         return isSame

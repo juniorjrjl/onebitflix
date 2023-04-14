@@ -1,16 +1,17 @@
 import { Like } from "../models/"
 
-export const likesService = {
-    create: async (userId: number, courseId: number) => {
+export default class LikesService{
+
+    async create(userId: number, courseId: number){
         const like = await Like.create({
             userId,
             courseId
         })
 
         return like
-    },
+    }
 
-    delete: async (userId: number, courseId: number) =>{
+    async delete(userId: number, courseId: number){
         await Like.destroy({where: {
             userId,
             courseId

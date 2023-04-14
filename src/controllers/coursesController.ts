@@ -2,14 +2,21 @@ import { NextFunction, Request, Response } from "express"
 import { ModelNotFoundError } from "../errors/modelNotFoundError"
 import { getPaginationParams } from "../helpers/getPaginationParams"
 import { getIdNumber } from "../helpers/paramConverter"
-import { AuthenticatedRequest } from "../middlewares/auth"
-import { coursesQueryService } from "../services/queries/coursesQueryService"
-import { favoritesQueryService } from "../services/queries/favoritesQueryService"
-import { likesQueryService } from "../services/queries/LikesQueryService"
+import { AuthenticatedRequest, ensure } from "../middlewares/auth"
+import CoursesQueryService from "../services/queries/coursesQueryService"
+import FavoritesQueryService from "../services/queries/favoritesQueryService"
+import LikesQueryService from "../services/queries/LikesQueryService"
 import { checkValidators } from "../validatos/validatorUtils"
 import { featuredSerializer, newestSerializer, popularSerializer, searchSerializer, showSerializer } from "../serializers/courseSerializer"
+import { GET, before, route } from "awilix-express"
+import { courseShowValidators, coursesSearchValidators } from "../validatos/coursesValidators"
 
-export const coursesController = {
+@route('/courses')
+export default class CoursesController{
+
+    constructor(private readonly coursesQueryService: CoursesQueryService,
+                private readonly favoritesQueryService: FavoritesQueryService,
+                private readonly likesQueryService: LikesQueryService){}
 
     /**
      * @swagger
@@ -53,14 +60,17 @@ export const coursesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    featured: async (req: Request, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/featured')
+    @before([ensure])
+    async featured(req: Request, res: Response, next: NextFunction){
         try {
-            const featured = await coursesQueryService.getRandomFeaturedCourses()
+            const featured = await this.coursesQueryService.getRandomFeaturedCourses()
             return res.json(featuredSerializer(featured))
         } catch (err) {
             next(err)
         }
-    },
+    }
     
     /**
      * @swagger
@@ -104,14 +114,16 @@ export const coursesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    newest: async (req: Request, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/newest')
+    async newest(req: Request, res: Response, next: NextFunction){
         try {
-            const newest = await coursesQueryService.getTopTenNewest()
+            const newest = await this.coursesQueryService.getTopTenNewest()
             return res.json(newestSerializer(newest))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -162,21 +174,24 @@ export const coursesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    show: async (req: AuthenticatedRequest, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/:id')
+    @before([ensure, courseShowValidators()])
+    async show(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             const courseId = getIdNumber(req.params)
             const userId = req.user!.id
-            const course = await coursesQueryService.findByIdWithEpisodes(courseId)
+            const course = await this.coursesQueryService.findByIdWithEpisodes(courseId)
             if (!course) throw new ModelNotFoundError('Curso não encontrado')
 
-            const liked = await likesQueryService.isLiked(userId, courseId)
-            const favorited = await favoritesQueryService.isFavorited(userId, courseId)
+            const liked = await this.likesQueryService.isLiked(userId, courseId)
+            const favorited = await this.favoritesQueryService.isFavorited(userId, courseId)
             return res.json(showSerializer(course, liked, favorited))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -235,18 +250,21 @@ export const coursesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    search: async (req: Request, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/search')
+    @before([coursesSearchValidators()])
+    async search(req: Request, res: Response, next: NextFunction){
         try {
             checkValidators(req)
             let { name } = req.query
             const [page, perPage ] = getPaginationParams(req.query)
             if (typeof name !== 'string') name = undefined
-            const courses = await coursesQueryService.findByName(page, perPage, name)
+            const courses = await this.coursesQueryService.findByName(page, perPage, name)
             return res.json(searchSerializer(courses))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
 
     /**
@@ -291,9 +309,12 @@ export const coursesController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    popular: async (req: Request, res: Response, next: NextFunction) =>{
+    @GET()
+    @route('/popular')
+    @before([ensure])
+    async popular(req: Request, res: Response, next: NextFunction){
         try {
-            const topTen = await coursesQueryService.getTopTenByLikes()
+            const topTen = await this.coursesQueryService.getTopTenByLikes()
             res.json(popularSerializer(topTen))
         } catch (err) {
             next(err)

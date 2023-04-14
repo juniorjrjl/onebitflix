@@ -10,7 +10,7 @@ export interface Course {
     categoryId: number
 }
 
-export interface CourseCreationAttributes extends Optional<Course, 'id' | 'thumbnaiUrl' | 'featured'>{}
+export interface CourseCreationAttributes extends Optional<Course, 'id' | 'thumbnailUrl' | 'featured'>{}
 
 export interface CourseInstance extends Model<Course, CourseCreationAttributes>, Course {}
 

@@ -1,8 +1,9 @@
 import { Op } from "sequelize"
 import { Course, Episode } from "../../models"
 
-export const coursesQueryService = {
-    findByIdWithEpisodes: async (id: number) =>{
+export default class CoursesQueryService{
+
+    async findByIdWithEpisodes(id: number){
         const courseWithEpisodes = Course.findByPk(id, {
             attributes:[
                 'id',
@@ -25,9 +26,9 @@ export const coursesQueryService = {
             }
         })
         return courseWithEpisodes
-    },
+    }
 
-    getRandomFeaturedCourses: async() =>{
+    async getRandomFeaturedCourses(){
         const featuredCourses = await Course.findAll({
                 attributes:[
                 'id',
@@ -41,17 +42,17 @@ export const coursesQueryService = {
         })
         const randomFeaturedCourses = featuredCourses.sort(() => 0.5 - Math.random())
         return randomFeaturedCourses.slice(0, 3)
-    },
+    }
 
-    getTopTenNewest: async() =>{
+    async getTopTenNewest(){
         const coures = await Course.findAll({
             limit: 10,
             order: [['created_at', 'DESC']]
         })
         return coures
-    },
+    }
 
-    getTopTenByLikes: async() =>{
+    async getTopTenByLikes(){
         const result = await Course.sequelize?.query(`
             SELECT courses.id,
                    course.name,
@@ -71,9 +72,9 @@ export const coursesQueryService = {
         
         const [topTen] = result
         return topTen
-    },
+    }
 
-    findByName: async (page: number, perPage: number, name?: string) =>{
+    async findByName(page: number, perPage: number, name?: string){
         const offset = (page -1) * perPage
         const where = name ? 
         {

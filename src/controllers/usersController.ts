@@ -1,12 +1,18 @@
 import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { AuthenticatedRequest } from '../middlewares/auth'
-import { usersQueryService } from "../services/queries/usersQueryService";
-import { usersService } from "../services/userService";
+import { AuthenticatedRequest, ensure } from '../middlewares/auth'
+import UsersQueryService from "../services/queries/usersQueryService";
+import UsersService from "../services/userService";
 import { checkValidators } from "../validatos/validatorUtils";
 import { showSerializer, updateSerializer, watchingSerializer } from "../serializers/usersSerializer";
+import { GET, PUT, before, route } from "awilix-express";
+import { userChangePasswordValidtators, userUpdateValidators } from "../validatos/usersValidators";
 
-export const usersController = {
+@route('/users/current')
+export default class UsersController{
+
+    constructor(private readonly usersService: UsersService,
+                private readonly usersQueryService: UsersQueryService){}
 
     /**
      * @swagger
@@ -50,15 +56,18 @@ export const usersController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
     */
-    watching: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @route('/watching')
+    @GET()
+    @before([ensure])
+    async watching(req: AuthenticatedRequest, res: Response, next: NextFunction){
         const { id } = req.user!
         try{
-            const watching = await usersQueryService.getKeepWatchingList(id)
+            const watching = await this.usersQueryService.getKeepWatchingList(id)
             return res.json(watchingSerializer(watching))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -100,14 +109,16 @@ export const usersController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    show: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @GET()
+    @before([ensure])
+    async show(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             const currentUser = req.user!
             return res.json(showSerializer(currentUser))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -155,17 +166,19 @@ export const usersController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    update: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @PUT()
+    @before([ensure, userUpdateValidators()])
+    async update(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const { id } = req.user!
             const { firstName, lastName, phone, birth, email } = req.body
-            const updatedUser = await usersService.update(id, {firstName, lastName, phone, birth, email})
+            const updatedUser = await this.usersService.update(id, {firstName, lastName, phone, birth, email})
             return res.json(updateSerializer(updatedUser))
         } catch (err) {
             next(err)
         }
-    },
+    }
 
     /**
      * @swagger
@@ -209,14 +222,17 @@ export const usersController = {
      *             schema:
      *               $ref: '#/components/schemas/ErrorResponse'
      */
-    changePassword: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    @route('/password')
+    @PUT()
+    @before([ensure, userChangePasswordValidtators()])
+    async changePassword(req: AuthenticatedRequest, res: Response, next: NextFunction){
         try{
             checkValidators(req)
             const user = req.user!
             const { currentPassword, passwordConfirm, newPassword } = req.body
             
-            await usersQueryService.checkPassword(currentPassword, user)
-            await usersService.updatePassword(user!.id, newPassword)
+            await this.usersQueryService.checkPassword(currentPassword, user)
+            await this.usersService.updatePassword(user!.id, newPassword)
             return res.status(StatusCodes.NO_CONTENT).send()
 
         } catch (err) {

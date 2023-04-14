@@ -1,7 +1,7 @@
 import { Course, Favorite } from "../../models"
 
-export const favoritesQueryService = {
-    findByUserId:async (userId:number) => {
+export default class FavoritesQueryService{
+    async findByUserId(userId:number){
         const favorites = await Favorite.findAll({
             attributes: [['user_id', 'userId']],
             where:{
@@ -16,9 +16,9 @@ export const favoritesQueryService = {
             userId,
             courses: favorites.map(f => f.Course)
         }
-    },
+    }
 
-    isFavorited: async(userId:number, courseId: number) =>{
+    async isFavorited(userId:number, courseId: number){
         const favorite = await Favorite.findOne({where: {
             courseId,
             userId
