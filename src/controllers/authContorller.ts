@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import JwtService from "../services/jwtService";
-import UsersService from "../services/userService";
+import UsersService from "../services/usersService";
 import UsersQueryService from "../services/queries/usersQueryService";
-import { EmailInUseError } from "../errors/emailInUseError";
-import { ModelNotFoundError } from "../errors/modelNotFoundError";
 import { PayloadDTO } from "../dto/payloadDTO";
 import { checkValidators } from "../validatos/validatorUtils";
 import { loginSerializer, registerSerializer } from "../serializers/authSerializer";
@@ -59,12 +57,6 @@ export default class AuthController{
         try{
             checkValidators(req)
             const { firstName, lastName, email, password, phone, birth } = req.body
-            try{
-                await this.usersQueryService.findByEmail(email)
-                throw new EmailInUseError('Este e-mail já está cadastrado')
-            }catch(err){
-                if (!(err instanceof ModelNotFoundError)) throw err
-            }
             const user = await this.usersService.create({ firstName, lastName, email, password, phone, birth, role: 'user' })
             return res.status(StatusCodes.CREATED).json(registerSerializer(user))
         }catch(err){
@@ -72,7 +64,7 @@ export default class AuthController{
         }
     }
 
-        /**
+    /**
      * @swagger
      * /auth/login:
      *   post:

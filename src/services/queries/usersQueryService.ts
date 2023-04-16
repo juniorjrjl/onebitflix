@@ -25,6 +25,7 @@ const filterLastEpisodesByCourse = (episodes: EpisodeInstance[]) => {
 }
 
 export default class UsersQueryService{
+    
     async findByEmail(email: string){
         const user = await User.findOne({where: { email }})
         if (!user) throw new ModelNotFoundError(`Não existe um usuário cadastrado com o email ${email}`)
@@ -56,5 +57,11 @@ export default class UsersQueryService{
         const isSame = await bcrypt.compare(password, user.password)
         if (!isSame) throw new UnauthorizedError('Senha incorreta')
         return isSame
+    }
+
+    async findById(id: number){
+        const user = await User.findByPk(id)
+        if (!user) throw new ModelNotFoundError(`Não foi encontrado um usuário com id ${id}`)
+        return user
     }
 }

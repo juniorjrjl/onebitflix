@@ -2,10 +2,11 @@ import { Response } from "express";
 import path from "path"
 import fs from 'fs'
 import { VideoInfo } from "../../dto/videoInfo";
-import { WatchTime } from "../../models";
+import { Episode, WatchTime } from "../../models";
+import { ModelNotFoundError } from "../../errors/modelNotFoundError";
 
 export default class EpisodesQueryService{
-    async streamEpisodeToresponse(res: Response, videoUrl: string, range: string | undefined){
+    async streamEpisodeToResponse(res: Response, videoUrl: string, range: string | undefined){
         const filePath = path.join(__dirname, '..', '..', '..','uploads', videoUrl)
         const fileStat = fs.statSync(filePath)
             
@@ -48,5 +49,11 @@ export default class EpisodesQueryService{
             }
         })
         return watchTime
+    }
+
+    async findById(id: number){
+        const episode = await Episode.findByPk(id)
+        if (!episode) throw new ModelNotFoundError(`Não foi encontrado um episódio com id ${id}`)
+        return episode
     }
 }

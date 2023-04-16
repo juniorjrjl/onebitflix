@@ -75,7 +75,7 @@ export default class EpisodesController{
             checkValidators(req)
             const { videoUrl } = req.query
             const range = req.headers.range
-            const videoInfo = await this.episodesQueryService.streamEpisodeToresponse(res, videoUrl as string, range)
+            const videoInfo = await this.episodesQueryService.streamEpisodeToResponse(res, videoUrl as string, range)
             let head: Head = {
                 'Content-Type' : 'video/mp4'
             }

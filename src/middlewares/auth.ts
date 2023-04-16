@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Jwt, JwtPayload, VerifyErrors } from "jsonwebtoken";
 import { UserInstance } from "../models/User";
-import { jwtService } from "../services/jwtService";
+import JwtService, { jwtService } from "../services/jwtService";
 import { usersQueryService } from "../services/queries/usersQueryService";
 import { UnauthorizedError } from "../errors/unauthorizedError";
 import { InvalidParamError } from "../errors/invalidParamError";

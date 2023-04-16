@@ -1,5 +1,6 @@
 import { Op } from "sequelize"
 import { Course, Episode } from "../../models"
+import { ModelNotFoundError } from "../../errors/modelNotFoundError"
 
 export default class CoursesQueryService{
 
@@ -101,4 +102,11 @@ export default class CoursesQueryService{
             total: count
         }
     }
+
+    async findById(id: number){
+        const user = await Course.findByPk(id)
+        if (!user) throw new ModelNotFoundError(`Não foi encontrado um curso com id ${id}`)
+        return user
+    }
+
 }

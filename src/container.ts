@@ -1,7 +1,7 @@
 import { asClass, createContainer } from "awilix";
 import { scopePerRequest } from "awilix-express";
 import { Application } from "express";
-import UsersService from "./services/userService";
+import UsersService from "./services/usersService";
 import LikesService from "./services/likesService";
 import JwtService from "./services/jwtService";
 import FavoritesService from "./services/favoritesService";

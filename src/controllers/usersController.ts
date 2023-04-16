@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { AuthenticatedRequest, ensure } from '../middlewares/auth'
 import UsersQueryService from "../services/queries/usersQueryService";
-import UsersService from "../services/userService";
+import UsersService from "../services/usersService";
 import { checkValidators } from "../validatos/validatorUtils";
 import { showSerializer, updateSerializer, watchingSerializer } from "../serializers/usersSerializer";
 import { GET, PUT, before, route } from "awilix-express";
