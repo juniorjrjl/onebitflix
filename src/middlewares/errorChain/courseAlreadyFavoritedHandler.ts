@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { AbstractHandler } from "./AbstractHandler";
+import { AbstractHandler } from "./abstractHandler";
 import { CourseAlreadyFavoritedError } from "../../errors/courseAlreadyFavoritedError";
 import { StatusCodes } from "http-status-codes";
 import { buildConflictError } from "../../serializers/errorsSerializer";

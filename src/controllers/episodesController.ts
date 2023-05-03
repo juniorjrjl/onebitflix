@@ -75,7 +75,7 @@ export default class EpisodesController{
             checkValidators(req)
             const { videoUrl } = req.query
             const range = req.headers.range
-            const videoInfo = await this.episodesQueryService.streamEpisodeToResponse(res, videoUrl as string, range)
+            const videoInfo = await this.episodesQueryService.streamEpisodeToResponse(videoUrl as string, range)
             let head: Head = {
                 'Content-Type' : 'video/mp4'
             }
@@ -221,11 +221,7 @@ export default class EpisodesController{
             const userId = req.user!.id
             const episodeId = Number(req.params.id)
             const { seconds } = req.body
-            const watchTime = await this.episodesService.setWatchTime({
-                episodeId,
-                userId,
-                seconds
-            })
+            const watchTime = await this.episodesService.setWatchTime(episodeId, userId, seconds)
             return res.json(setWatchTimeSerializer(watchTime))
         } catch (err) {
             next(err)

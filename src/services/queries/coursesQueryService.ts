@@ -5,7 +5,7 @@ import { ModelNotFoundError } from "../../errors/modelNotFoundError"
 export default class CoursesQueryService{
 
     async findByIdWithEpisodes(id: number){
-        const courseWithEpisodes = Course.findByPk(id, {
+        const courseWithEpisodes = await Course.findByPk(id, {
             attributes:[
                 'id',
                 'name',
@@ -26,6 +26,8 @@ export default class CoursesQueryService{
                 separate: true
             }
         })
+        if (!(courseWithEpisodes)) throw new ModelNotFoundError(`Não foi encontrado um curso com id ${id}`)
+
         return courseWithEpisodes
     }
 
@@ -69,7 +71,7 @@ export default class CoursesQueryService{
              ORDER BY likes DESC
              LIMIT 10
         `)
-        if (!result) return null
+        if (!result) return []
         
         const [topTen] = result
         return topTen
@@ -104,9 +106,10 @@ export default class CoursesQueryService{
     }
 
     async findById(id: number){
-        const user = await Course.findByPk(id)
-        if (!user) throw new ModelNotFoundError(`Não foi encontrado um curso com id ${id}`)
-        return user
+        const course = await Course.findByPk(id)
+        if (!(course)) throw new ModelNotFoundError(`Não foi encontrado um curso com id ${id}`)
+
+        return course
     }
 
 }

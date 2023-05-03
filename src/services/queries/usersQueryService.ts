@@ -28,7 +28,8 @@ export default class UsersQueryService{
     
     async findByEmail(email: string){
         const user = await User.findOne({where: { email }})
-        if (!user) throw new ModelNotFoundError(`Não existe um usuário cadastrado com o email ${email}`)
+        if (!(user)) throw new ModelNotFoundError(`Não existe um usuário cadastrado com o email ${email}`)
+
         return user
     }
 
@@ -46,7 +47,7 @@ export default class UsersQueryService{
                 }
             },
         })
-        if (!userWithWatchingEpisodes) throw new Error('Usuário não encontrado')
+        if (!(userWithWatchingEpisodes)) throw new ModelNotFoundError(`Não foi encontrado um usuário com id ${id}`)
 
         const keepWatchingList = filterLastEpisodesByCourse(userWithWatchingEpisodes.Episodes!)
         keepWatchingList.sort((a, b) => a.watchTime!.updatedAt < b.watchTime!.updatedAt ? 1 : 0) 

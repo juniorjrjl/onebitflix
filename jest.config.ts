@@ -8,6 +8,8 @@ const config: Config.InitialOptions = {
     setupFiles: ['<rootDir>/test/setup.ts'],
     testEnvironment: 'node',
     maxWorkers: 1,
-    preset: 'ts-jest'
+    preset: 'ts-jest',
+    collectCoverage: true,
+    coverageReporters: ['json', 'html']
 };
 export default config;

@@ -2,7 +2,6 @@ import { EmailInUseError } from "../errors/emailInUseError"
 import { ModelNotFoundError } from "../errors/modelNotFoundError"
 import { User } from "../models"
 import { UserCreationAttributes } from "../models/User"
-import { MockProxy, mock } from "jest-mock-extended"
 import UsersQueryService from "./queries/usersQueryService"
 
 export default class UsersService{

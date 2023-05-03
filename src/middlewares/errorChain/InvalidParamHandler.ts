@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { AbstractHandler } from "./AbstractHandler";
+import { AbstractHandler } from "./abstractHandler";
 import { StatusCodes } from "http-status-codes";
 import { InvalidParamError } from "../../errors/invalidParamError";
 import { BadRequestErrorSerializer } from "../../serializers/errorsSerializer";

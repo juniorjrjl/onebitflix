@@ -8,6 +8,9 @@ import { checkValidators } from "../validatos/validatorUtils";
 import { loginSerializer, registerSerializer } from "../serializers/authSerializer";
 import { POST, before, route } from "awilix-express";
 import { authLoginValidators, authRegisterValidators } from "../validatos/authValidator";
+import bodyParser from 'body-parser'
+import { ModelNotFoundError } from "../errors/modelNotFoundError";
+import { UnauthorizedError } from "../errors/unauthorizedError";
 
 @route('/auth')
 export default class AuthController{
@@ -55,6 +58,7 @@ export default class AuthController{
     @before([authRegisterValidators()])
     async register(req: Request, res: Response, next: NextFunction){
         try{
+            console.log(req.body)
             checkValidators(req)
             const { firstName, lastName, email, password, phone, birth } = req.body
             const user = await this.usersService.create({ firstName, lastName, email, password, phone, birth, role: 'user' })
@@ -111,11 +115,15 @@ export default class AuthController{
         try{
             checkValidators(req)
             const { email, password } = req.body
-            const user = await this.usersQueryService.findByEmail(email)
-            await this.usersQueryService.checkPassword(password, user)
-            const payload = new PayloadDTO(user.id, user.firstName, user.email)
-            const token = this.jwtService.sign(payload, '1d')
-            return res.json(loginSerializer(token))
+            try{
+                const user = await this.usersQueryService.findByEmail(email)
+                await this.usersQueryService.checkPassword(password, user)
+                const payload = new PayloadDTO(user.id, user.firstName, user.email)
+                const token = this.jwtService.sign(payload, '1d')
+                return res.json(loginSerializer(token))
+            }catch(ex){
+                if ((ex instanceof ModelNotFoundError) || (ex instanceof UnauthorizedError)) throw new UnauthorizedError('Usuário e/ou senha incorretos')
+            }
         }catch(err){
             next(err)
         }

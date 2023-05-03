@@ -1,6 +1,8 @@
+import { ModelNotFoundError } from "../../errors/modelNotFoundError"
 import { Category, Course } from "../../models"
 
 export default class CategoriesQueryService{
+
     async findAllPaginated(page: number, perPage: number){
         const offset = (page - 1) * perPage
         const {count, rows} = await Category.findAndCountAll({
@@ -24,6 +26,8 @@ export default class CategoriesQueryService{
                 model: Course,
                 attributes: ['id', 'name', 'synopsis', ['thumbnail_url', 'thumbnailUrl']]
             } })
+        if (!(categoryWithCourser)) throw new ModelNotFoundError(`A categoria com id ${id} não foi encontrada`)
+
         return categoryWithCourser
     } 
 

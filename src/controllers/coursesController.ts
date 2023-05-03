@@ -183,7 +183,6 @@ export default class CoursesController{
             const courseId = getIdNumber(req.params)
             const userId = req.user!.id
             const course = await this.coursesQueryService.findByIdWithEpisodes(courseId)
-            if (!course) throw new ModelNotFoundError('Curso não encontrado')
 
             const liked = await this.likesQueryService.isLiked(userId, courseId)
             const favorited = await this.favoritesQueryService.isFavorited(userId, courseId)

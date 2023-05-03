@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { AbstractHandler } from "./AbstractHandler";
+import { AbstractHandler } from "./abstractHandler";
 import { StatusCodes } from "http-status-codes";
 import { EmailInUseError } from "../../errors/emailInUseError";
 import { buildConflictError } from "../../serializers/errorsSerializer";

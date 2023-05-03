@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { AbstractHandler } from "./AbstractHandler";
+import { AbstractHandler } from "./abstractHandler";
 import { StatusCodes } from "http-status-codes";
 import { ModelNotFoundError } from "../../errors/modelNotFoundError";
 import { notFoundErrorSerializer } from "../../serializers/errorsSerializer";

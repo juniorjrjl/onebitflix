@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker"
 import { EmailInUseError } from "../../../src/errors/emailInUseError"
 import { ModelNotFoundError } from "../../../src/errors/modelNotFoundError"
 import { User } from "../../../src/models"
@@ -50,6 +51,7 @@ describe('Users Service', () => {
         [(mock: jest.Mocked<UsersQueryService>, id: number) => mock.findByEmail.mockResolvedValueOnce(userFactory.build({id}) as UserInstance)]
     ])('update user test', async (mockConfigCallvack) => {
         const user = userFactory.build()
+        usersQueryServiceMockConfig.findById.mockResolvedValueOnce(user as UserInstance)
         mockConfigCallvack(usersQueryServiceMockConfig, user.id)
 
         let mockStaticMethod = jest.fn();
@@ -59,10 +61,12 @@ describe('Users Service', () => {
         await usersService.update(user.id, user)
 
         expect(usersQueryServiceMockConfig.findByEmail).toHaveBeenCalledTimes(1)
+        expect(usersQueryServiceMockConfig.findById).toHaveBeenCalledTimes(1)
     })
 
     it('when try tu use email in use then throw a error', async () =>{
         const user = userFactory.build({id: 1})
+        usersQueryServiceMockConfig.findById.mockResolvedValueOnce(user as UserInstance)
         usersQueryServiceMockConfig.findByEmail.mockResolvedValueOnce(userFactory.build({id: 2, email: user.email}) as UserInstance)
         try{
             await usersService.update(user.id, user)
@@ -70,6 +74,44 @@ describe('Users Service', () => {
             expect(err).toBeInstanceOf(EmailInUseError)
         }
         expect(usersQueryServiceMockConfig.findByEmail).toHaveBeenCalledTimes(1)
+        expect(usersQueryServiceMockConfig.findById).toHaveBeenCalledTimes(1)
+    })
+
+    it('when try update non stored user then throw error', async () =>{
+        const user = userFactory.build()
+        usersQueryServiceMockConfig.findById.mockRejectedValueOnce(new ModelNotFoundError(''))
+
+        try{
+            await usersService.update(user.id, user)
+        }catch(err){
+            expect(err).toBeInstanceOf(ModelNotFoundError)
+        }
+
+        expect(usersQueryServiceMockConfig.findById).toHaveBeenCalledTimes(1)
+    })
+
+    it('update password test', async () =>{
+        const user = userFactory.build()
+        usersQueryServiceMockConfig.findById.mockResolvedValueOnce(user as UserInstance)
+
+        let mockStaticMethod = jest.fn();
+        User.update = mockStaticMethod
+        mockStaticMethod.mockImplementation(async (a, b) => [1, user as UserInstance])
+
+        await usersService.updatePassword(user.id, faker.lorem.word())
+        expect(usersQueryServiceMockConfig.findById).toHaveBeenCalledTimes(1)
+    })
+
+    it('when try update password non stored user then throw error', async () =>{
+        const user = userFactory.build()
+        usersQueryServiceMockConfig.findById.mockRejectedValueOnce(new ModelNotFoundError(''))
+
+        try{
+            await usersService.updatePassword(user.id, faker.lorem.word())
+        }catch(err){
+            expect(err).toBeInstanceOf(ModelNotFoundError)
+        }
+        expect(usersQueryServiceMockConfig.findById).toHaveBeenCalledTimes(1)
     })
 
 })

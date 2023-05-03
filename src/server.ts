@@ -8,10 +8,12 @@ import cors from 'cors'
 import { errorHandler } from './middlewares/errorHandle'
 import swaggerUi from 'swagger-ui-express'
 import { swaggerSpec } from './documentations/swagger'
+import bodyParser from 'body-parser'
 
 dotenv.config()
 const app = express()
 loadContainer(app)
+app.use(bodyParser.json())
 app.use(loadControllers('controllers/*.ts',{ cwd: __dirname }));
 app.use(cors())
 app.use(express.static('public'))

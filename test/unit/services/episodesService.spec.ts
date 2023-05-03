@@ -1,6 +1,6 @@
 import EpisodesService from "../../../src/services/episodesService"
 import EpisodesQueryService from "../../../src/services/queries/episodesQueryService"
-import { setWatchTimePropsToInstance, watchTimeFactory } from "../../factories/watchTime"
+import { watchTimeFactory } from "../../factories/watchTime"
 import { WatchTime } from "../../../src/models"
 import { WatchTimeInstance } from "../../../src/models/WatchTime"
 import { MockProxy, mock } from "jest-mock-extended"
@@ -45,7 +45,7 @@ describe('Episodes Service', () => {
         usersQueryServiceMockConfig.findById.mockResolvedValueOnce(userFactory.build() as UserInstance)
 
         watchTimeInstanceMock.save.mockResolvedValueOnce(watchTime as WatchTimeInstance)
-        await episodesService.setWatchTime(setWatchTimePropsToInstance(watchTime, watchTimeInstanceMock))
+        await episodesService.setWatchTime(watchTime.userId, watchTime.episodeId, watchTime.seconds)
         expect(episodesQueryServiceMocked.findById).toHaveBeenCalledTimes(1)
         expect(usersQueryServiceMocked.findById).toHaveBeenCalledTimes(1)
         expect(episodesQueryServiceMocked.findByUserIdAndEpisodeId).toHaveBeenCalledTimes(1)
@@ -54,11 +54,11 @@ describe('Episodes Service', () => {
 
     it('When has no watchTime then save it', async ()=> {
         const watchTime =  watchTimeFactory.build();
-        episodesQueryServiceMockConfig.findByUserIdAndEpisodeId.mockResolvedValueOnce(null)
+        episodesQueryServiceMockConfig.findByUserIdAndEpisodeId.mockRejectedValueOnce(new ModelNotFoundError('error'))
         episodesQueryServiceMockConfig.findById.mockResolvedValueOnce(episodeFactory.build() as EpisodeInstance)
         usersQueryServiceMockConfig.findById.mockResolvedValueOnce(userFactory.build() as UserInstance)
 
-        await episodesService.setWatchTime(setWatchTimePropsToInstance(watchTime, watchTimeInstanceMock))
+        await episodesService.setWatchTime(watchTime.userId, watchTime.episodeId, watchTime.seconds)
         expect(episodesQueryServiceMocked.findById).toHaveBeenCalledTimes(1)
         expect(usersQueryServiceMocked.findById).toHaveBeenCalledTimes(1)
         jest.spyOn(WatchTime, 'create').mockResolvedValueOnce(watchTime)
@@ -70,7 +70,7 @@ describe('Episodes Service', () => {
         const watchTime =  watchTimeFactory.build();
         episodesQueryServiceMockConfig.findById.mockRejectedValueOnce(new ModelNotFoundError('error'))
         try{
-            await episodesService.setWatchTime(setWatchTimePropsToInstance(watchTime, watchTimeInstanceMock))
+            await episodesService.setWatchTime(watchTime.userId, watchTime.episodeId, watchTime.seconds)
         }catch(err){
             expect(err).toBeInstanceOf(ModelNotFoundError)
         }
@@ -85,7 +85,7 @@ describe('Episodes Service', () => {
         episodesQueryServiceMockConfig.findById.mockResolvedValueOnce(episodeFactory.build() as EpisodeInstance)
         usersQueryServiceMockConfig.findById.mockRejectedValueOnce(new ModelNotFoundError('error'))
         try{
-            await episodesService.setWatchTime(setWatchTimePropsToInstance(watchTime, watchTimeInstanceMock))
+            await episodesService.setWatchTime(watchTime.userId, watchTime.episodeId, watchTime.seconds)
         }catch(err){
             expect(err).toBeInstanceOf(ModelNotFoundError)
         }

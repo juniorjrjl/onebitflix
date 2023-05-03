@@ -2,7 +2,7 @@ import { Response } from "express";
 import { OneBitFlixError } from "../../errors/oneBitFlixError";
 import { StatusCodes } from "http-status-codes";
 import { defaultErrorSerializer } from "../../serializers/errorsSerializer";
-import { AbstractHandler } from "./AbstractHandler";
+import { AbstractHandler } from "./abstractHandler";
 
 export class GenericHandler extends AbstractHandler{
 
