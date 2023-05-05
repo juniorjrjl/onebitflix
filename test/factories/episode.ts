@@ -9,5 +9,7 @@ export const episodeFactory =  Factory.makeFactory<Episode>({
     order: Number(faker.random.numeric()),
     videoUrl: faker.internet.url(),
     secondsLong: Number(faker.random.numeric(4)),
-    courseId: Number(faker.random.numeric())
+    courseId: Number(faker.random.numeric()),
+    Course: undefined,
+    WatchTime: undefined,
 })

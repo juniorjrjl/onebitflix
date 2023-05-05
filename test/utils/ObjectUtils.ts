@@ -1,0 +1,1 @@
+export const isKey = <T extends Object>(c: T, k: PropertyKey): k is keyof T => k in c

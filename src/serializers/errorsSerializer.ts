@@ -13,12 +13,12 @@ export const defaultErrorSerializer = () => baseErrorSerializer("Ocorreu um erro
 
 export const notFoundErrorSerializer = (message: String) => baseErrorSerializer(message, StatusCodes.NOT_FOUND)
 
-export const BadRequestErrorSerializer = (message: String, fields: InvalidParamField[] | null) => {
-    type responseType = {[key: string]: Object}
+export const badRequestErrorSerializer = (message: String, fields: InvalidParamField[] | null) => {
+    type responseType = {[key: string]: any}
     let response: responseType = baseErrorSerializer(message, StatusCodes.BAD_REQUEST)
-    if (fields){
-        fields.forEach(f => {
-            response.fields = {
+    if ((fields) && (fields.length)){
+        response.fields = fields.map((f: InvalidParamField) => {
+            return {
                 field: f.field,
                 message: f.message
             }
@@ -27,6 +27,6 @@ export const BadRequestErrorSerializer = (message: String, fields: InvalidParamF
     return response
 }
 
-export const buildConflictError = (message: String) => baseErrorSerializer(message, StatusCodes.CONFLICT)
+export const conflictErrorSerializer = (message: String) => baseErrorSerializer(message, StatusCodes.CONFLICT)
 
-export const buildUnauthorizedError = (message: String) => baseErrorSerializer(message, StatusCodes.UNAUTHORIZED)
+export const unauthorizedErrorSerializer = (message: String) => baseErrorSerializer(message, StatusCodes.UNAUTHORIZED)

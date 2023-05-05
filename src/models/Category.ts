@@ -1,13 +1,15 @@
 import { sequelize } from '../database';
 import { DataTypes, Model, Optional } from 'sequelize';
+import { Course } from './Course';
 
 export interface Category{
     id: number,
     name: string,
-    position: number
+    position: number,
+    Courses?: Course[]
 }
 
-export interface CategoryCreationAttributes extends Optional<Category, 'id'> {}
+export interface CategoryCreationAttributes extends Optional<Category, 'id' | 'Courses'> {}
 
 export interface CategoryInstance extends Model<Category, CategoryCreationAttributes>, Category {}
 

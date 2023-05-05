@@ -2,7 +2,7 @@ import { Course, Episode } from "../models"
 import { PageSerializer } from "./commonsSerializer"
 
 export const featuredSerializer = (courses: Course[]) =>{
-    if (!courses) return []
+    if (!courses.length) return []
     
     return courses.map(course => {
         return{
@@ -19,7 +19,7 @@ export const featuredSerializer = (courses: Course[]) =>{
 }
 
 export const newestSerializer = (courses: Course[]) =>{
-    if (!courses) return []
+    if (!courses.length) return []
 
     return courses.map(course => {
         return{
@@ -43,7 +43,7 @@ export const showSerializer = (course: Course, liked: boolean, favorited: boolea
         thumbnailUrl: course.thumbnailUrl,
         liked,
         favorited,
-        episodes: course?.Episodes.map(e => showEpisodes(e))
+        episodes: course.Episodes && course.Episodes.length ? course.Episodes.map(e => showEpisodes(e)) : []
     }
 }
 
@@ -70,7 +70,7 @@ const PageRow = (course: Course) =>{
 }
 
 export const popularSerializer = (courses: any[]) =>{
-    if (!courses) return []
+    if (!courses.length) return []
 
     return courses.map(c => {
         return {

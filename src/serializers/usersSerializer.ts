@@ -25,7 +25,7 @@ export const showSerializer = (user: User) => {
 }
 
 export const watchingSerializer = (episodes: Episode[]) => {
-    if (!episodes) return []
+    if (!episodes.length) return []
 
     return episodes.map(e =>{
         return {
@@ -35,8 +35,8 @@ export const watchingSerializer = (episodes: Episode[]) => {
             order: e.order,
             videoUrl: e.videoUrl,
             secondsLong: e.secondsLong,
-            watchTime: watchingTimeSerializer(e.WatchTime),
-            course: watchingCourseSerializer(e.Course)
+            watchTime: e.WatchTime ? watchingTimeSerializer(e.WatchTime): null,
+            course: e.Course ? watchingCourseSerializer(e.Course) : null
         }
     })
 }

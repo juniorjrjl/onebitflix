@@ -8,7 +8,6 @@ import { checkValidators } from "../validatos/validatorUtils";
 import { loginSerializer, registerSerializer } from "../serializers/authSerializer";
 import { POST, before, route } from "awilix-express";
 import { authLoginValidators, authRegisterValidators } from "../validatos/authValidator";
-import bodyParser from 'body-parser'
 import { ModelNotFoundError } from "../errors/modelNotFoundError";
 import { UnauthorizedError } from "../errors/unauthorizedError";
 

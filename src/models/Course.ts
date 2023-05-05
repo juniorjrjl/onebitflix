@@ -1,5 +1,6 @@
 import { sequelize } from "../database";
 import { DataTypes, Model, Optional } from 'sequelize'
+import { Episode } from "./Episode";
 
 export interface Course {
     id: number
@@ -8,9 +9,12 @@ export interface Course {
     thumbnailUrl: string
     featured: boolean
     categoryId: number
+    createdAt: Date
+    updatedAt: Date
+    Episodes?: Episode[]
 }
 
-export interface CourseCreationAttributes extends Optional<Course, 'id' | 'thumbnailUrl' | 'featured'>{}
+export interface CourseCreationAttributes extends Optional<Course, 'id' | 'thumbnailUrl' | 'featured' | 'createdAt' | 'updatedAt' | 'Episodes'>{}
 
 export interface CourseInstance extends Model<Course, CourseCreationAttributes>, Course {}
 
@@ -43,4 +47,12 @@ export const Course = sequelize.define<CourseInstance, Course>('Course',{
         onUpdate: 'CASCADE',
         onDelete: 'RESTRICT'
     },
+    createdAt: {
+        allowNull: false,
+        type: DataTypes.DATE
+    },
+    updatedAt: {
+        allowNull: false,
+        type: DataTypes.DATE
+    }
 }, {underscored: true})

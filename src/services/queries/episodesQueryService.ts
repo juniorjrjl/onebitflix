@@ -36,6 +36,7 @@ export default class EpisodesQueryService{
                 episodeId
             }
         })
+        if (!(watchTime)) throw new ModelNotFoundError(`O usuário ${userId} não começou a assistir o episódio ${episodeId}`)
 
         return watchTime
     }

@@ -10,7 +10,7 @@ export const saveSerializer = (favorite: Favorite) =>{
 export const indexSerializer = (favorite: {userId: number, courses: (Course | undefined)[]}) => {
     return{
         userId: favorite.userId,
-        courses: favorite.courses ? indexCoursesSerializer(favorite.courses) : []
+        courses: favorite.courses && favorite.courses.length ? indexCoursesSerializer(favorite.courses) : []
     }
 }
 

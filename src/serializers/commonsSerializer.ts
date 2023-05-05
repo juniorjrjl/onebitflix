@@ -3,6 +3,6 @@ export const PageSerializer = (pageable: {page: number, perPage: number, total: 
         page: pageable.page,
         perPage: pageable.perPage,
         total: pageable.total,
-        content: pageable.content ? pageable.content.map(r => contentSerializer(r)) : []
+        content: pageable.content && pageable.content.length ? pageable.content.map(r => contentSerializer(r)) : []
     }
 }

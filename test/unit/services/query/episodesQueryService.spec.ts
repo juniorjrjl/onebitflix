@@ -25,6 +25,27 @@ describe('Episodes Query Service', () => {
         expect(videInfo.File).not.toBeNull()
     })*/
 
+    it('get watchtime test', async () => {
+        const watchTime = watchTimeFactory.build()
+        let mockStaticMethod = jest.fn();
+        WatchTime.findOne = mockStaticMethod
+        mockStaticMethod.mockImplementation(async (a, b) => await watchTime)
+        const actual = await episodesQueryService.getWatchTime(1, 1)
+        expect(actual).toBe(watchTime)
+    })
+
+    it('when try to get watchtime non stored course then throw error', async () => {
+        let mockStaticMethod = jest.fn();
+        WatchTime.findOne = mockStaticMethod
+        mockStaticMethod.mockReturnValue(undefined)
+        try{
+            await episodesQueryService.getWatchTime(1, 1)
+        }catch(err){
+            expect(err).toBeInstanceOf(ModelNotFoundError)
+        }
+    })
+
+
     it('find by userId and episodeId test', async () => {
         const watchTime = watchTimeFactory.build()
         let mockStaticMethod = jest.fn();
@@ -36,7 +57,7 @@ describe('Episodes Query Service', () => {
 
     it('when try to get with episodes non stored course then throw error', async () => {
         let mockStaticMethod = jest.fn();
-        WatchTime.findByPk = mockStaticMethod
+        WatchTime.findOne = mockStaticMethod
         mockStaticMethod.mockReturnValue(undefined)
         try{
             await episodesQueryService.findByUserIdAndEpisodeId(1, 1)

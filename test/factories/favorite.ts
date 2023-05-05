@@ -8,8 +8,13 @@ export const favoriteFactory = Factory.makeFactory<Favorite>({
     courseId: Number(faker.random.numeric())
 })
 
-export const favoriteWithCoursesFactory = Factory.makeFactory<any>({
+export const favoriteWithCourseFactory = Factory.makeFactory<any>({
     userId: Number(faker.random.numeric()),
     courseId: Number(faker.random.numeric()),
     course: courseFactory.build()
+})
+
+export const favoriteWithCoursesFactory = Factory.makeFactory<any>({
+    userId: Number(faker.random.numeric()),
+    courses: []
 })

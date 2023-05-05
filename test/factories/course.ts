@@ -9,4 +9,6 @@ export const courseFactory = Factory.makeFactory<Course>({
     thumbnailUrl: faker.internet.url(),
     featured: (Number(faker.random.numeric()) % 2 === 0),
     categoryId: Number(faker.random.numeric()),
+    createdAt: new Date(),
+    updatedAt: new Date()
 })

@@ -1,7 +1,6 @@
 import { WatchTime } from "../models"
 
-export const getWatchTimeSerializer = (watchTime: WatchTime | null) =>{
-    if (!watchTime) return {}
+export const getWatchTimeSerializer = (watchTime: WatchTime) =>{
     return{
         episodeId: watchTime.episodeId,
         seconds: watchTime.seconds

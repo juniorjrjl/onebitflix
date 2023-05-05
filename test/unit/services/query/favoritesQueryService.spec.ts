@@ -1,6 +1,6 @@
 import { Favorite } from "../../../../src/models"
 import FavoritesQueryService from "../../../../src/services/queries/favoritesQueryService"
-import { favoriteFactory, favoriteWithCoursesFactory } from "../../../factories/favorite"
+import { favoriteFactory, favoriteWithCourseFactory } from "../../../factories/favorite"
 
 
 describe('Favorites Query Service', () => {
@@ -11,7 +11,7 @@ describe('Favorites Query Service', () => {
 
     it('find user favorites', async () =>{
         const userId = 1
-        const favorites = favoriteWithCoursesFactory.buildList(5)
+        const favorites = favoriteWithCourseFactory.buildList(5)
         let mockStaticMethod = jest.fn();
         Favorite.findAll = mockStaticMethod
         mockStaticMethod.mockImplementation(async a => favorites)

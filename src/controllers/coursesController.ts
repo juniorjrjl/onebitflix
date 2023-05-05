@@ -7,7 +7,7 @@ import CoursesQueryService from "../services/queries/coursesQueryService"
 import FavoritesQueryService from "../services/queries/favoritesQueryService"
 import LikesQueryService from "../services/queries/likesQueryService"
 import { checkValidators } from "../validatos/validatorUtils"
-import { featuredSerializer, newestSerializer, popularSerializer, searchSerializer, showSerializer } from "../serializers/courseSerializer"
+import { featuredSerializer, newestSerializer, popularSerializer, searchSerializer, showSerializer } from "../serializers/coursesSerializer"
 import { GET, before, route } from "awilix-express"
 import { courseShowValidators, coursesSearchValidators } from "../validatos/coursesValidators"
 
