@@ -31,7 +31,7 @@ const handleChain = (): AbstractHandler => {
     return new CourseAlreadyLikedHandler(courseAlreadyFavoritedHandler)
 }
 
-interface ICradle{
+export interface ICradle{
 
     usersService: UsersService
     likesService: LikesService

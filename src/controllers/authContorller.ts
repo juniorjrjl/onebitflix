@@ -57,7 +57,6 @@ export default class AuthController{
     @before([authRegisterValidators()])
     async register(req: Request, res: Response, next: NextFunction){
         try{
-            console.log(req.body)
             checkValidators(req)
             const { firstName, lastName, email, password, phone, birth } = req.body
             const user = await this.usersService.create({ firstName, lastName, email, password, phone, birth, role: 'user' })

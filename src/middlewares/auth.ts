@@ -4,9 +4,26 @@ import { UserInstance } from "../models/User";
 import { UnauthorizedError } from "../errors/unauthorizedError";
 import { InvalidParamError } from "../errors/invalidParamError";
 import container from "../container";
+import UsersQueryService from "../services/queries/usersQueryService";
+import jwt from 'jsonwebtoken'
 
 export interface AuthenticatedRequest extends Request {
     user?: UserInstance | null
+}
+
+export const verifyCallback = (usersQueryService: UsersQueryService, next: NextFunction, req: AuthenticatedRequest): jwt.VerifyCallback =>{
+    const verifyCallback = async (err: any, decoded: any) => {
+        try{
+            if (err || typeof decoded === 'undefined') throw new UnauthorizedError('Não autorizado: token inválido')
+            
+            const user = await usersQueryService.findByEmail((decoded as JwtPayload).email)
+            req.user = user
+            next()
+        }catch(err){
+            next(err)
+        }
+    }
+    return verifyCallback
 }
 
 export const ensure = (req: AuthenticatedRequest, res: Response, next: NextFunction) =>{
@@ -18,17 +35,7 @@ export const ensure = (req: AuthenticatedRequest, res: Response, next: NextFunct
         if (!authorizationHeader.startsWith('Bearer ')) throw new UnauthorizedError('O parâmetro "authorization", no header, deve iniciar com "Bearer "')
 
         const token = authorizationHeader.replace(/Bearer /, '')
-        jwtService.verify(token, async (err, decoded) => {
-            try{
-                if (err || typeof decoded === 'undefined') throw new UnauthorizedError('Não autorizado: token inválido')
-                
-                const user = await usersQueryService.findByEmail((decoded as JwtPayload).email)
-                req.user = user
-                next()
-            }catch(err){
-                next(err)
-            }
-        })
+        jwtService.verify(token, verifyCallback(usersQueryService, next, req))
     }catch(err){
         next(err)
     }
@@ -40,22 +47,10 @@ export function ensureQuery(req: AuthenticatedRequest, res: Response, next: Next
         const jwtService = container.cradle.jwtService
         const usersQueryService = container.cradle.usersQueryService
         const { token } = req.query
-
         if (!token) throw new UnauthorizedError('Não autorizado: nenhum token encontrado')
-
         if (typeof token !== 'string') throw new InvalidParamError('O parâmetro token deve ser do tipo string')
 
-        jwtService.verify(token, (err, decoded) => {
-            try{
-                if (err || typeof decoded === 'undefined') throw new UnauthorizedError('Não autorizado: token inválido')
-                usersQueryService.findByEmail((decoded as JwtPayload).email).then(user => {
-                    req.user = user
-                    next()
-                })
-            }catch(err){
-                next(err)
-            }
-        })
+        jwtService.verify(token, verifyCallback(usersQueryService, next, req))
     }catch(err){
         next(err)
     }
