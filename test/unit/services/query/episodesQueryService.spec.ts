@@ -3,8 +3,21 @@ import { episodeFactory } from "../../../factories/episode"
 import { Episode, WatchTime } from "../../../../src/models"
 import { ModelNotFoundError } from "../../../../src/errors/modelNotFoundError"
 import { watchTimeFactory } from "../../../factories/watchTime"
+import { faker } from "@faker-js/faker"
 
-//jest.mock('fs')
+jest.mock('fs', () =>{
+    const fsOriginal = jest.requireActual('fs')
+    return{
+        __esModule: true,
+        ...fsOriginal,
+        statSync: jest.fn(() => {
+            return { file: 100 }
+        }),
+        createReadStream: jest.fn(() => { 
+            return {}
+        })
+    }
+})
 
 describe('Episodes Query Service', () => {
 
@@ -12,18 +25,25 @@ describe('Episodes Query Service', () => {
 
     beforeEach(() => episodesQueryService = new EpisodesQueryService())
 
+    afterEach(() => jest.clearAllMocks())
 
-    /*it('get stream partial video', async ()=> {
-        let mockFileInfo = jest.fn()
-        jest.doMock('fs', () => {{statSync: mockFileInfo}})
-        mockFileInfo.mockImplementation(a => {
-            return { size: 100}
-        })
-        const videInfo = await episodesQueryService.streamEpisodeToResponse(faker.system.filePath(), 'bytes=0-')
+    it('get stream partial video', async ()=> {
+        const videInfo = await episodesQueryService.streamEpisodeToResponse(faker.system.filePath(), 'bytes=0-1023')
         expect(videInfo.ContentLength).not.toBeNull()
         expect(videInfo.ContentRange).not.toBeNull()
         expect(videInfo.File).not.toBeNull()
-    })*/
+        expect(videInfo.FilePath).toBeUndefined()
+        expect(videInfo.FileStats).toBeUndefined()
+    })
+
+    it('get stream full video', async () =>{
+        const videInfo = await episodesQueryService.streamEpisodeToResponse(faker.system.filePath(), undefined)
+        expect(videInfo.FilePath).not.toBeNull()
+        expect(videInfo.FileStats).not.toBeNull()
+        expect(videInfo.ContentLength).toBeUndefined()
+        expect(videInfo.ContentRange).toBeUndefined()
+        expect(videInfo.File).toBeUndefined()
+    })
 
     it('get watchtime test', async () => {
         const watchTime = watchTimeFactory.build()

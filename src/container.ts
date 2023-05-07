@@ -12,27 +12,10 @@ import FavoritesQueryService from "./services/queries/favoritesQueryService";
 import EpisodesQueryService from "./services/queries/episodesQueryService";
 import CoursesQueryService from "./services/queries/coursesQueryService";
 import CategoriesQueryService from "./services/queries/categoriesQueryService";
-import { GenericHandler } from "./middlewares/errorChain/genericHandler";
-import { UnauthorizedHandler } from "./middlewares/errorChain/unauthorizedHandler";
-import { EmailInUseHandler } from "./middlewares/errorChain/emailInUseHandler";
-import { InvalidParamHandler } from "./middlewares/errorChain/invalidParamHandler";
-import { ModelNotFoundHandler } from "./middlewares/errorChain/modelNotFoundHandler";
-import { CourseAlreadyFavoritedHandler } from "./middlewares/errorChain/courseAlreadyFavoritedHandler";
-import { CourseAlreadyLikedHandler } from "./middlewares/errorChain/courseAlreadyLikedHandler";
 import { AbstractHandler } from "./middlewares/errorChain/abstractHandler";
-
-const handleChain = (): AbstractHandler => {
-    const genericHandler = new GenericHandler(undefined);
-    const unauthorizedHandler = new UnauthorizedHandler(genericHandler);
-    const emailInUseHandler = new EmailInUseHandler(unauthorizedHandler);
-    const invalidParamHandler = new InvalidParamHandler(emailInUseHandler);
-    const modelNotFoundHandler = new ModelNotFoundHandler(invalidParamHandler);
-    const courseAlreadyFavoritedHandler = new CourseAlreadyFavoritedHandler(modelNotFoundHandler)
-    return new CourseAlreadyLikedHandler(courseAlreadyFavoritedHandler)
-}
+import { handleChain } from "./middlewares/errorChain/handlerChain";
 
 export interface ICradle{
-
     usersService: UsersService
     likesService: LikesService
     jwtService: JwtService
@@ -46,7 +29,6 @@ export interface ICradle{
     categoriesQueryService: CategoriesQueryService
     errorHandlerChain: AbstractHandler
 }
-
 
 const container = createContainer<ICradle>({injectionMode: 'CLASSIC'})
 

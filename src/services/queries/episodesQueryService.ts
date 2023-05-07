@@ -1,5 +1,5 @@
 import path from "path"
-import fs from 'fs'
+import { statSync, createReadStream } from 'fs'
 import { VideoInfo } from "../../dto/videoInfo";
 import { Episode, WatchTime } from "../../models";
 import { ModelNotFoundError } from "../../errors/modelNotFoundError";
@@ -7,14 +7,14 @@ import { ModelNotFoundError } from "../../errors/modelNotFoundError";
 export default class EpisodesQueryService{
     async streamEpisodeToResponse(videoUrl: string, range: string | undefined){
         const filePath = path.join(__dirname, '..', '..', '..','uploads', videoUrl)
-        const fileStat = fs.statSync(filePath)
-            
+        const fileStat = statSync(filePath)
+
         if (range){
             const parts = range.replace(/bytes=/, '').split('-')
             const start = parseInt(parts[0], 10)
             const end = parts[1] ? parseInt(parts[1], 10) : fileStat.size - 1
             const chunkSize = (end - start) + 1
-            const file = fs.createReadStream(filePath, { start, end })
+            const file = createReadStream(filePath, { start, end })
             return VideoInfo.partialVideBuilder()
                 .contentLength(chunkSize)
                 .contentRange(`bytes ${start}-${end}/${fileStat.size}`)
